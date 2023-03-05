@@ -1,14 +1,21 @@
+import 'dart:convert';
 import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
 import 'package:http/http.dart' as http;
 
 class SpotifyOauthKeyService {
-  final SecureStorageWrapperService _storageWrapperService;
-  final String jwt;
+  late final SecureStorageWrapperService _storageWrapperService;
+  late final String _jwt;
+  final String baseUrl;
   SpotifyOauthKeyService(
-      SecureStorageWrapperService secureStorageWrapperService, this.jwt)
-      : _storageWrapperService = secureStorageWrapperService;
+      {required String jwt,
+      required SecureStorageWrapperService storageWrapperService,
+      this.baseUrl = "http://192.168.0.6:8000"}) {
+    _jwt = jwt;
+    _storageWrapperService = storageWrapperService;
+  }
 
-  putAccessTokens(String providerToken, String refreshToken) async {
+  Future<void> putAccessTokens(
+      String providerToken, String refreshToken) async {
     await _storageWrapperService.write("refreshToken", refreshToken);
     await _storageWrapperService.write("providerToken", providerToken);
   }
@@ -17,9 +24,18 @@ class SpotifyOauthKeyService {
       await _storageWrapperService.read("providerToken");
   Future<String?> get refreshToken async =>
       _storageWrapperService.read("refreshToken");
-  updateAccessToken() async {
+
+  Future<void> updateAccessToken() async {
     String? refToken = await refreshToken;
-    http.get(Uri.parse("localhost:8000/update-tokens"),
-        headers: {"Authorization": "Bearer $jwt", "X-RefreshToken": refToken!});
+    http.Response resp = await http.get(Uri.parse("$baseUrl/update-tokens"),
+        headers: {
+          "Authorization": "Bearer $_jwt",
+          "X-Refresh-Token": refToken!
+        });
+    if (resp.statusCode < 401) {
+      final accessToken = jsonDecode(resp.body)["access_token"];
+      putAccessTokens(accessToken, refToken);
+    }
+    throw "Can't update Spotify Token!";
   }
 }
