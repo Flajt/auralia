@@ -4,6 +4,8 @@ import 'package:async/async.dart';
 import 'package:auralia/logic/abstract/DBServiceA.dart';
 import 'package:auralia/logic/abstract/LocationServiceA.dart';
 import 'package:auralia/logic/services/LocationService.dart';
+import 'package:auralia/logic/services/OauthKeySerivce.dart';
+import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
 import 'package:auralia/logic/util/SpotifyUtil.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
 import 'package:auralia/models/regular/LocationModel.dart';
@@ -11,7 +13,6 @@ import 'package:flutter_activity_recognition/flutter_activity_recognition.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/DBService.dart';
 
@@ -22,7 +23,7 @@ void entryPoint() {
 
 class CollectionHandler extends TaskHandler {
   late final FlutterActivityRecognition _activityService;
-  Supabase? _supabase;
+  late final SpotifyOauthKeyService _keyService;
   String? _accessToken;
   StreamSubscription? _sub;
   String _latestActivity = ActivityType.UNKNOWN.name;
@@ -33,15 +34,12 @@ class CollectionHandler extends TaskHandler {
   CollectionHandler() {
     _activityService = FlutterActivityRecognition.instance;
     _locationService = LocationService();
+    _keyService = SpotifyOauthKeyService(
+        jwt: "jwt", storageWrapperService: SecureStorageWrapperService());
   }
 
   Future<void> initServices() async {
-    _supabase = await Supabase.initialize(
-        url: "https://limbadcemvavrnorbkig.supabase.co",
-        anonKey:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpbWJhZGNlbXZhdnJub3Jia2lnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzY5ODYzNTYsImV4cCI6MTk5MjU2MjM1Nn0.RgD8isCOgvIADI9Yv9iifhFi1grpwzZYP-BGIeXXzJM");
-
-    _accessToken = _supabase!.client.auth.currentSession!.providerToken!;
+    _accessToken = await _keyService.accessToken!;
     await SpotifySdk.connectToSpotifyRemote(
         clientId: "8faad74f47d8448d863224389ba98e8f",
         redirectUrl: "background://auralia",

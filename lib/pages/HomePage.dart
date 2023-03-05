@@ -1,18 +1,10 @@
 import 'dart:async';
-
-import 'package:async/async.dart';
-import 'package:auralia/logic/services/ActivityService.dart';
 import 'package:auralia/logic/services/PermissionService.dart';
 import 'package:auralia/logic/util/ForgroundServiceUtil.dart';
 import 'package:auralia/logic/workerServices/ForegroundService.dart';
 import 'package:auralia/uiblocks/buttons/SettingsButton.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_activity_recognition/flutter_activity_recognition.dart';
-import 'package:flutter_activity_recognition/models/activity.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:spotify_sdk/models/player_state.dart';
-import 'package:spotify_sdk/spotify_sdk.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -93,28 +85,7 @@ class _HomePageState extends State<HomePage> {
                       }
                     },
                     child: const Text("Enable personalization")),
-              ),
-              OutlinedButton(
-                  onPressed: () async {
-                    String accessToken = Supabase
-                        .instance.client.auth.currentSession!.accessToken;
-                    await SpotifySdk.connectToSpotifyRemote(
-                        clientId: "8faad74f47d8448d863224389ba98e8f",
-                        redirectUrl: "background://auralia",
-                        accessToken: accessToken);
-                    Stream myStreams = StreamGroup.merge([
-                      SpotifySdk.subscribePlayerState(),
-                      FlutterActivityRecognition.instance.activityStream
-                    ]);
-
-                    sub = myStreams.listen((event) async {
-                      print(event);
-                      print(event is Activity);
-                      print(event is PlayerState);
-                      print("------------------------");
-                    });
-                  },
-                  child: Text("PRESS"))
+              )
             ],
           ),
         )),

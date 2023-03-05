@@ -1,23 +1,27 @@
-import 'package:auralia/logic/spotify-web/SpotifyWrapper.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:auralia/logic/services/OauthKeySerivce.dart';
+import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
+import 'package:auralia/logic/util/initSuperbase.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:logger/logger.dart';
 import 'package:workmanager/workmanager.dart';
-import '../util/SpotifyUtil.dart';
 
-class BackgroundServices {
-  @pragma('vm:entry-point')
-  static musicCollectionService() async {
-    Workmanager().executeTask((taskName, inputData) async {
-      String jwt = Supabase.instance.client.auth.currentSession!.providerToken!;
-      final artistGerneMapping =
-          await SpotifyUtil.getLatestUserArtistsAndGenres(jwt);
+@pragma('vm:entry-point')
+void updateOauthAccessToken() {
+  Workmanager().executeTask((taskName, inputData) async {
+    try {
+      final supabase = await initSupabase();
+      String jwt = supabase.client.auth.currentSession!.accessToken;
+      final oauthService = SpotifyOauthKeyService(
+          jwt: jwt, storageWrapperService: SecureStorageWrapperService());
+      await oauthService.updateAccessToken();
+      bool hasAServiceRunning = await FlutterForegroundTask.isRunningService;
+      if (hasAServiceRunning) {
+        await FlutterForegroundTask.restartService();
+      }
       return Future.value(true);
-    });
-  }
-
-  @pragma('vm:entry-point')
-  static locationActivityCollectionService() async {
-    Workmanager().executeTask((taskName, inputData) {
-      return Future.value(true);
-    });
-  }
+    } catch (e) {
+      Logger().e(e.toString());
+      return Future.error(e);
+    }
+  });
 }
