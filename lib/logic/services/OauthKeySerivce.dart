@@ -27,15 +27,17 @@ class SpotifyOauthKeyService {
 
   Future<void> updateAccessToken() async {
     String? refToken = await refreshToken;
-    http.Response resp = await http.get(Uri.parse("$baseUrl/update-tokens"),
+    http.Response resp = await http.get(Uri.parse("$baseUrl/update-token"),
         headers: {
           "Authorization": "Bearer $_jwt",
           "X-Refresh-Token": refToken!
         });
+
     if (resp.statusCode < 401) {
       final accessToken = jsonDecode(resp.body)["access_token"];
-      putAccessTokens(accessToken, refToken);
+      await putAccessTokens(accessToken, refToken);
+    } else {
+      throw "Can't update Spotify Token!";
     }
-    throw "Can't update Spotify Token!";
   }
 }
