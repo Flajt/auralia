@@ -1,9 +1,9 @@
-import 'package:auralia/logic/services/DBService.dart';
 import 'package:auralia/pages/HomePage.dart';
 import 'package:auralia/pages/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:workmanager/workmanager.dart';
+import 'logic/util/SaveOauthTokens.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +35,9 @@ class MyApp extends StatelessWidget {
           if (snapshot.hasData &&
                   snapshot.data?.event == AuthChangeEvent.signedIn ||
               snapshot.data?.event == AuthChangeEvent.tokenRefreshed) {
-            if (snapshot.data?.event == AuthChangeEvent.signedIn) {}
+            if (snapshot.data?.event == AuthChangeEvent.signedIn) {
+              saveOauthTokens(snapshot);
+            }
             return const HomePage();
           } else {
             return const LoginPage();
