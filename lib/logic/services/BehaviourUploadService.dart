@@ -5,11 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import "package:http/http.dart" as http;
 import '../../models/regular/ListeningBehaviourModel.dart';
 
-class SongUploadService {
+class BehaviourUploadServices {
   final DBServiceA dbServiceA;
   final String baseUrl;
   //TODO: Create provider with basic values
-  const SongUploadService(
+  const BehaviourUploadServices(
       {required this.dbServiceA, this.baseUrl = "http://192.168.0.6:8000"});
 
   Future<int> get recentUploadTime async =>
