@@ -211,6 +211,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.6"
+  elegant_notification:
+    dependency: "direct main"
+    description:
+      name: elegant_notification
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.6.4"
   equatable:
     dependency: transitive
     description:
