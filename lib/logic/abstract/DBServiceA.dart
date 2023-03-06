@@ -6,4 +6,5 @@ abstract class DBServiceA {
   put(ListeningBehaviourModel model);
   update(ListeningBehaviourModel model);
   delete(ListeningBehaviourModel model);
+  Future<void> close();
 }

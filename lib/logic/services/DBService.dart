@@ -1,11 +1,13 @@
 import 'package:auralia/logic/abstract/DBServiceA.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
 
 class IsarDBService extends DBServiceA {
   late final Isar _isar;
   IsarDBService() {
-    _isar = Isar.openSync([ListeningBehaviourModelSchema], inspector: true);
+    _isar =
+        Isar.openSync([ListeningBehaviourModelSchema], inspector: kDebugMode);
   }
   @override
   delete(ListeningBehaviourModel model) {
@@ -40,5 +42,10 @@ class IsarDBService extends DBServiceA {
         .dateTimeInMisGreaterThan(latestDTInMs)
         .findAll();
     return data;
+  }
+
+  @override
+  Future<void> close() async {
+    await _isar.close();
   }
 }
