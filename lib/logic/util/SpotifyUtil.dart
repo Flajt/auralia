@@ -1,3 +1,5 @@
+import 'package:auralia/logic/util/toUtcTime.dart';
+
 import '../../models/regular/ListeningBehaviourModel.dart';
 import '../spotify-web/SpotifyWrapper.dart';
 
@@ -46,8 +48,8 @@ class SpotifyUtil {
           0.0,
           "UNKNOWN", // Currently empty
           isSdkTrack
-              ? DateTime.now().millisecondsSinceEpoch
-              : DateTime.parse(userTrack["played_at"] as String)
+              ? toUtcTime(DateTime.now()).millisecondsSinceEpoch
+              : toUtcTime(DateTime.parse(userTrack["played_at"] as String))
                   .millisecondsSinceEpoch));
     }
     return models;

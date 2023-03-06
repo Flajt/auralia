@@ -14,31 +14,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  StreamSubscription? sub;
-  StreamSubscription? _testSub;
   @override
   void initState() {
     super.initState();
     initForeGroundService();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // You can get the previous ReceivePort without restarting the service.
-      if (await FlutterForegroundTask.isRunningService) {
-        final newReceivePort = FlutterForegroundTask.receivePort;
-        if (sub != null) {
-          sub!.cancel();
-        }
-        sub = newReceivePort?.listen((message) {
-          print(message);
-          print("-----");
-        });
-      }
-    });
   }
 
   @override
   void dispose() {
-    sub?.cancel();
-    _testSub?.cancel();
     super.dispose();
   }
 
@@ -49,46 +32,39 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         body: SafeArea(
             child: SizedBox.fromSize(
-          size: size,
-          child: Stack(
-            children: [
-              const Align(
-                  alignment: Alignment.topRight, child: SettingsButton()),
-              Center(
-                  child: Text(
-                      "This app currently only collects data, more features comming soon.",
-                      style: Theme.of(context).textTheme.headlineMedium,
-                      textAlign: TextAlign.center)),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: OutlinedButton(
-                    onPressed: () async {
-                      final PermissionService permissionService =
-                          PermissionService();
-                      bool activityEnabled =
-                          await permissionService.reqeuestActivityRecognition();
-                      bool locationEnabled =
-                          await permissionService.requestLocationAccess();
-                      bool notificationEnabled = await permissionService
-                          .requestNotificationPermission();
-                      if (activityEnabled &&
-                          locationEnabled &&
-                          notificationEnabled) {
-                        await FlutterForegroundTask.startService(
-                            notificationTitle: "Collection",
-                            notificationText: "Collecting your music taste",
-                            callback: entryPoint);
-                        sub = FlutterForegroundTask.receivePort!
-                            .listen((message) {
-                          print(message);
-                        });
-                      }
-                    },
-                    child: const Text("Enable personalization")),
-              )
-            ],
-          ),
-        )),
+                size: size,
+                child: Stack(children: [
+                  const Align(
+                      alignment: Alignment.topRight, child: SettingsButton()),
+                  Center(
+                      child: Text(
+                          "This app currently only collects data, more features comming soon.",
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          textAlign: TextAlign.center)),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: OutlinedButton(
+                        onPressed: () async {
+                          final PermissionService permissionService =
+                              PermissionService();
+                          bool activityEnabled = await permissionService
+                              .reqeuestActivityRecognition();
+                          bool locationEnabled =
+                              await permissionService.requestLocationAccess();
+                          bool notificationEnabled = await permissionService
+                              .requestNotificationPermission();
+                          if (activityEnabled &&
+                              locationEnabled &&
+                              notificationEnabled) {
+                            await FlutterForegroundTask.startService(
+                                notificationTitle: "Collection",
+                                notificationText: "Collecting your music taste",
+                                callback: entryPoint);
+                          }
+                        },
+                        child: const Text("Enable personalization")),
+                  )
+                ]))),
       ),
     );
   }
