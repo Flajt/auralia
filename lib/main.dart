@@ -14,12 +14,14 @@ Future<void> main() async {
   Workmanager().registerPeriodicTask(
       "auralia_oauth_update_service", "Updates Spotify Access Token",
       constraints: Constraints(networkType: NetworkType.connected),
+      initialDelay: const Duration(minutes: 5),
       frequency: const Duration(minutes: 50));
   Workmanager().initialize(behaviourBackgroundService, isInDebugMode: false);
   Workmanager().registerPeriodicTask(
       "auralia_upload_service", "Uploads data to backend",
       constraints: Constraints(networkType: NetworkType.connected),
       frequency: const Duration(hours: 24),
+      initialDelay: const Duration(minutes: 5),
       backoffPolicy: BackoffPolicy.exponential);
 
   await initSupabase();
