@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:isolate';
 import 'package:async/async.dart';
 import 'package:auralia/logic/abstract/DBServiceA.dart';
@@ -30,6 +31,8 @@ class CollectionHandler extends TaskHandler {
   late final LocationServiceA _locationService;
   String _latestSong = "";
   final DBServiceA _dbService = IsarDBService();
+  final Queue<DateTime> timerQueue = Queue();
+  ListeningBehaviourModel? lastSong;
 
   CollectionHandler() {
     _activityService = FlutterActivityRecognition.instance;
@@ -60,7 +63,6 @@ class CollectionHandler extends TaskHandler {
       await initServices();
       Stream myStreams = StreamGroup.merge(
           [SpotifySdk.subscribePlayerState(), _activityService.activityStream]);
-
       _sub = myStreams.listen((event) async {
         if (event is Activity) {
           _latestActivity = event.type.name;
@@ -68,6 +70,15 @@ class CollectionHandler extends TaskHandler {
           if (event.track?.isPodcast == false &&
               event.track?.isEpisode == false &&
               _latestSong != event.track?.name) {
+            DateTime currentTime = DateTime.now();
+            if (timerQueue.isNotEmpty) {
+              Duration difference =
+                  currentTime.difference(timerQueue.removeFirst());
+              if (difference >= const Duration(seconds: 30)) {
+                await _dbService.put(lastSong!);
+              }
+            }
+            timerQueue.add(currentTime);
             _latestSong = event.track!.name;
 
             LocationModel locationModel =
@@ -81,12 +92,10 @@ class CollectionHandler extends TaskHandler {
                 await SpotifyUtil.extractArtistsAndGenres(
                     _accessToken!, artists, true);
 
-            ListeningBehaviourModel updatedModel = behaviourModel.first
-                .copyWith(
-                    latitude: locationModel.latitude,
-                    longitude: locationModel.longitude,
-                    activity: _latestActivity);
-            await _dbService.put(updatedModel);
+            lastSong = behaviourModel.first.copyWith(
+                latitude: locationModel.latitude,
+                longitude: locationModel.longitude,
+                activity: _latestActivity);
           }
         }
       });
