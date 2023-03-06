@@ -58,11 +58,9 @@ class CollectionHandler extends TaskHandler {
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
     try {
       await initServices();
-      sendPort?.send("gogogog");
       Stream myStreams = StreamGroup.merge(
           [SpotifySdk.subscribePlayerState(), _activityService.activityStream]);
 
-      sendPort?.send("lets go super mario");
       _sub = myStreams.listen((event) async {
         if (event is Activity) {
           _latestActivity = event.type.name;
@@ -97,7 +95,6 @@ class CollectionHandler extends TaskHandler {
     } catch (e, stack) {
       FlutterForegroundTask.updateService(
           notificationTitle: "Error", notificationText: e.toString());
-      sendPort?.send(e.toString());
     }
   }
 }
