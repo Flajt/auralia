@@ -12,7 +12,9 @@ void updateOauthAccessToken() {
       final supabase = await initSupabase();
       String jwt = supabase.client.auth.currentSession!.accessToken;
       final oauthService = SpotifyOauthKeyService(
-          jwt: jwt, storageWrapperService: SecureStorageWrapperService());
+          jwt: jwt,
+          storageWrapperService: SecureStorageWrapperService(),
+          baseUrl: "https://auralia.fly.dev");
       await oauthService.updateAccessToken();
       bool hasAServiceRunning = await FlutterForegroundTask.isRunningService;
       if (hasAServiceRunning) {

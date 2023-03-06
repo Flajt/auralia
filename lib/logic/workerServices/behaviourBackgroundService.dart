@@ -11,8 +11,10 @@ Future<void> behaviourBackgroundService() async {
     try {
       final supabase = await initSupabase();
       final accessToken = supabase.client.auth.currentSession!.accessToken;
-      final uploadService =
-          BehaviourUploadService(dbServiceA: IsarDBService(), jwt: accessToken);
+      final uploadService = BehaviourUploadService(
+          dbServiceA: IsarDBService(),
+          jwt: accessToken,
+          baseUrl: "https://auralia.fly.dev");
       await uploadService.uploadSongs();
       return Future.value(true);
     } catch (e) {
