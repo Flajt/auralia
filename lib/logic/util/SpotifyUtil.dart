@@ -23,35 +23,40 @@ class SpotifyUtil {
   static Future<List<ListeningBehaviourModel>> extractArtistsAndGenres(
       String jwt, List<dynamic> userTracks,
       [bool isSdkTrack = false]) async {
-    final wrapper = SpotifyWrapper(jwt);
-    List<ListeningBehaviourModel> models = [];
-    List<String> trackArtists = [];
-    for (var userTrack in userTracks) {
-      if (!isSdkTrack) {
-        trackArtists = List.from(
-            (userTrack["track"]["artists"] as List<dynamic>)
-                .map((e) => e["id"])
-                .toList());
-      } else {
-        trackArtists = userTracks as List<String>;
+    try {
+      final wrapper = SpotifyWrapper(jwt);
+      List<ListeningBehaviourModel> models = [];
+      List<String> trackArtists = [];
+      for (var userTrack in userTracks) {
+        if (!isSdkTrack) {
+          trackArtists = List.from(
+              (userTrack["track"]["artists"] as List<dynamic>)
+                  .map((e) => e["id"])
+                  .toList());
+        } else {
+          trackArtists = userTracks as List<String>;
+        }
+        Map<String, List<String>> artistGenreMapping =
+            await wrapper.getGenres(trackArtists);
+        List<String> genres =
+            artistGenreMapping.values.reduce((value, element) {
+          value.addAll(element);
+          return value;
+        });
+        models.add(ListeningBehaviourModel(
+            trackArtists,
+            genres,
+            0.0,
+            0.0,
+            "UNKNOWN", // Currently empty
+            isSdkTrack
+                ? toUtcTime(DateTime.now()).millisecondsSinceEpoch
+                : toUtcTime(DateTime.parse(userTrack["played_at"] as String))
+                    .millisecondsSinceEpoch));
       }
-      Map<String, List<String>> artistGenreMapping =
-          await wrapper.getGenres(trackArtists);
-      List<String> genres = artistGenreMapping.values.reduce((value, element) {
-        value.addAll(element);
-        return value;
-      });
-      models.add(ListeningBehaviourModel(
-          trackArtists,
-          genres,
-          0.0,
-          0.0,
-          "UNKNOWN", // Currently empty
-          isSdkTrack
-              ? toUtcTime(DateTime.now()).millisecondsSinceEpoch
-              : toUtcTime(DateTime.parse(userTrack["played_at"] as String))
-                  .millisecondsSinceEpoch));
+      return models;
+    } catch (e) {
+      throw e.toString();
     }
-    return models;
   }
 }
