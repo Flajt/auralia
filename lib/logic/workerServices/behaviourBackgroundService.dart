@@ -1,14 +1,15 @@
 import 'package:auralia/logic/services/BehaviourUploadService.dart';
 import 'package:auralia/logic/services/DBService.dart';
+import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/util/initSuperbase.dart';
-import 'package:logger/logger.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:workmanager/workmanager.dart';
 
 @pragma("vm:entry-point")
 Future<void> behaviourBackgroundService() async {
   Workmanager().executeTask((taskName, inputData) async {
     try {
+      await initSentry(null);
       final supabase = await initSupabase();
       final accessToken = supabase.client.auth.currentSession!.accessToken;
       final uploadService = BehaviourUploadService(
@@ -17,8 +18,8 @@ Future<void> behaviourBackgroundService() async {
           baseUrl: "https://auralia.fly.dev");
       await uploadService.uploadSongs();
       return Future.value(true);
-    } catch (e) {
-      Logger().e(e);
+    } catch (e, stack) {
+      await Sentry.captureException(e, stackTrace: stack);
       return Future.error(e);
     }
   });

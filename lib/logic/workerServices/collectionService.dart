@@ -1,14 +1,16 @@
 import 'package:auralia/logic/services/OauthKeySerivce.dart';
 import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
+import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/util/initSuperbase.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:logger/logger.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:workmanager/workmanager.dart';
 
 @pragma('vm:entry-point')
 void updateOauthAccessToken() {
   Workmanager().executeTask((taskName, inputData) async {
     try {
+      await initSentry(null);
       final supabase = await initSupabase();
       String jwt = supabase.client.auth.currentSession!.accessToken;
       final oauthService = SpotifyOauthKeyService(
@@ -21,8 +23,8 @@ void updateOauthAccessToken() {
         await FlutterForegroundTask.restartService();
       }
       return Future.value(true);
-    } catch (e) {
-      Logger().e(e.toString());
+    } catch (e, stack) {
+      await Sentry.captureException(e, stackTrace: stack);
       return Future.error(e);
     }
   });
