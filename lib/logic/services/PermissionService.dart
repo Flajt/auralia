@@ -89,7 +89,7 @@ class PermissionService {
               description:
                   "To enable this App to run in the background and keep you up to date on what is happening it requires the ability to post notifications. If you have rejected it, open the settings to enable it.",
               onPress: () async {
-                await permission.request();
+                await Permission.notification.request();
                 Navigator.of(context).pop();
               }));
       PermissionStatus reqStatus = await permission.status;
