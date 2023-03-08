@@ -32,8 +32,7 @@ class SpotifyOauthKeyService {
           "Authorization": "Bearer $_jwt",
           "X-Refresh-Token": refToken!
         });
-
-    if (resp.statusCode < 401) {
+    if (resp.statusCode < 400) {
       final accessToken = jsonDecode(resp.body)["access_token"];
       await putAccessTokens(accessToken, refToken);
     } else {
