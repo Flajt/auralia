@@ -1,3 +1,4 @@
+import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/workerServices/behaviourBackgroundService.dart';
 import 'package:auralia/logic/workerServices/collectionService.dart';
 import 'package:auralia/pages/HomePage.dart';
@@ -10,13 +11,13 @@ import 'logic/util/initSuperbase.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Workmanager().initialize(updateOauthAccessToken, isInDebugMode: true);
+  Workmanager().initialize(updateOauthAccessToken, isInDebugMode: false);
   Workmanager().registerPeriodicTask(
       "auralia_oauth_update_service", "Updates Spotify Access Token",
       constraints: Constraints(networkType: NetworkType.connected),
       initialDelay: const Duration(minutes: 5),
       frequency: const Duration(minutes: 50));
-  Workmanager().initialize(behaviourBackgroundService, isInDebugMode: false);
+  Workmanager().initialize(behaviourBackgroundService, isInDebugMode: true);
   Workmanager().registerPeriodicTask(
       "auralia_upload_service", "Uploads data to backend",
       constraints: Constraints(networkType: NetworkType.connected),
@@ -25,7 +26,7 @@ Future<void> main() async {
       backoffPolicy: BackoffPolicy.exponential);
 
   await initSupabase();
-  runApp(const MyApp());
+  await initSentry(() => runApp(const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
