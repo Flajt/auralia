@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:io';
 import 'dart:isolate';
 import 'package:async/async.dart';
 import 'package:auralia/logic/abstract/DBServiceA.dart';
@@ -9,6 +10,7 @@ import 'package:auralia/logic/services/OauthKeySerivce.dart';
 import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
 import 'package:auralia/logic/util/SpotifyUtil.dart';
 import 'package:auralia/logic/util/initSentry.dart';
+import 'package:auralia/logic/util/initSuperbase.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
 import 'package:auralia/models/regular/LocationModel.dart';
 import 'package:flutter_activity_recognition/flutter_activity_recognition.dart';
@@ -18,6 +20,7 @@ import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 import '../services/DBService.dart';
+import '../util/iosTokenRefresh.dart';
 
 @pragma('vm:entry-point')
 void entryPoint() {
@@ -26,7 +29,7 @@ void entryPoint() {
 
 class CollectionHandler extends TaskHandler {
   late final FlutterActivityRecognition _activityService;
-  late final SpotifyOauthKeyService _keyService;
+  SpotifyOauthKeyService? _keyService;
   String? _accessToken;
   StreamSubscription? _sub;
   String _latestActivity = ActivityType.UNKNOWN.name;
@@ -35,17 +38,31 @@ class CollectionHandler extends TaskHandler {
   final DBServiceA _dbService = IsarDBService();
   final Queue<DateTime> timerQueue = Queue();
   ListeningBehaviourModel? lastSong;
-
+  final Stream<int> _timerStream =
+      Stream.periodic(const Duration(minutes: 50), (eventCount) => eventCount);
+  final SecureStorageWrapperService secureStorageWrapperService =
+      SecureStorageWrapperService();
+  StreamSubscription? _timerSub;
   CollectionHandler() {
     _activityService = FlutterActivityRecognition.instance;
     _locationService = LocationService();
-    _keyService = SpotifyOauthKeyService(
-        jwt: "jwt", storageWrapperService: SecureStorageWrapperService());
   }
 
   Future<void> initServices() async {
     await initSentry(null);
-    _accessToken = await _keyService.accessToken;
+    if (Platform.isIOS) {
+      String jwt =
+          (await initSupabase()).client.auth.currentSession!.accessToken;
+      _keyService = SpotifyOauthKeyService(
+          jwt: jwt,
+          storageWrapperService: SecureStorageWrapperService(),
+          baseUrl: "https://auralia.fly.dev");
+      _timerSub = _timerStream.listen((event) async {
+        await iOSTokenRefresh(_keyService!);
+        await FlutterForegroundTask.restartService();
+      });
+    }
+    _accessToken = await _keyService!.accessToken;
     await SpotifySdk.connectToSpotifyRemote(
         clientId: "8faad74f47d8448d863224389ba98e8f",
         redirectUrl: "background://auralia",
@@ -55,6 +72,7 @@ class CollectionHandler extends TaskHandler {
   @override
   Future<void> onDestroy(DateTime timestamp, SendPort? sendPort) async {
     await _sub?.cancel();
+    await _timerSub?.cancel();
     await SpotifySdk.disconnect();
   }
 
@@ -63,6 +81,7 @@ class CollectionHandler extends TaskHandler {
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
+    bool hasError = false;
     try {
       await initServices();
       Stream myStreams = StreamGroup.merge(
@@ -104,10 +123,14 @@ class CollectionHandler extends TaskHandler {
                   activity: _latestActivity);
             }
           }
-          await FlutterForegroundTask.updateService(
-              notificationTitle: "Collecting",
-              notificationText: "Collecting your music choice");
+          if (hasError) {
+            await FlutterForegroundTask.updateService(
+                notificationTitle: "Collecting",
+                notificationText: "Collecting your music choice");
+            hasError = false;
+          }
         } catch (e, stack) {
+          hasError = true;
           if (e is Map) {
             String error = e["error"]["message"];
             await FlutterForegroundTask.updateService(
@@ -119,6 +142,7 @@ class CollectionHandler extends TaskHandler {
         }
       });
     } catch (e, stack) {
+      hasError = true;
       await Sentry.captureException(e, stackTrace: stack);
       await FlutterForegroundTask.updateService(
           notificationTitle: "Error", notificationText: e.toString());
