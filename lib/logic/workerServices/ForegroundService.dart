@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:isolate';
 import 'package:async/async.dart';
 import 'package:auralia/logic/abstract/DBServiceA.dart';
@@ -7,10 +8,12 @@ import 'package:auralia/logic/services/LocationService.dart';
 import 'package:auralia/logic/services/OauthKeySerivce.dart';
 import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
 import 'package:auralia/logic/util/SpotifyUtil.dart';
+import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
 import 'package:auralia/models/regular/LocationModel.dart';
 import 'package:flutter_activity_recognition/flutter_activity_recognition.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
@@ -30,6 +33,8 @@ class CollectionHandler extends TaskHandler {
   late final LocationServiceA _locationService;
   String _latestSong = "";
   final DBServiceA _dbService = IsarDBService();
+  final Queue<DateTime> timerQueue = Queue();
+  ListeningBehaviourModel? lastSong;
 
   CollectionHandler() {
     _activityService = FlutterActivityRecognition.instance;
@@ -39,7 +44,8 @@ class CollectionHandler extends TaskHandler {
   }
 
   Future<void> initServices() async {
-    _accessToken = await _keyService.accessToken!;
+    await initSentry(null);
+    _accessToken = await _keyService.accessToken;
     await SpotifySdk.connectToSpotifyRemote(
         clientId: "8faad74f47d8448d863224389ba98e8f",
         redirectUrl: "background://auralia",
@@ -49,6 +55,7 @@ class CollectionHandler extends TaskHandler {
   @override
   Future<void> onDestroy(DateTime timestamp, SendPort? sendPort) async {
     await _sub?.cancel();
+    await SpotifySdk.disconnect();
   }
 
   @override
@@ -60,40 +67,60 @@ class CollectionHandler extends TaskHandler {
       await initServices();
       Stream myStreams = StreamGroup.merge(
           [SpotifySdk.subscribePlayerState(), _activityService.activityStream]);
-
       _sub = myStreams.listen((event) async {
-        if (event is Activity) {
-          _latestActivity = event.type.name;
-        } else if (event is PlayerState) {
-          if (event.track?.isPodcast == false &&
-              event.track?.isEpisode == false &&
-              _latestSong != event.track?.name) {
-            _latestSong = event.track!.name;
+        try {
+          if (event is Activity) {
+            _latestActivity = event.type.name;
+          } else if (event is PlayerState) {
+            if (event.track?.isPodcast == false &&
+                event.track?.isEpisode == false &&
+                _latestSong != event.track?.name) {
+              DateTime currentTime = DateTime.now();
+              if (timerQueue.isNotEmpty) {
+                Duration difference =
+                    currentTime.difference(timerQueue.removeFirst());
+                if (difference >= const Duration(seconds: 30) &&
+                    lastSong != null) {
+                  await _dbService.put(lastSong!);
+                }
+              }
+              timerQueue.add(currentTime);
+              _latestSong = event.track!.name;
 
-            LocationModel locationModel =
-                await _locationService.getCurrentLocation();
-            List<String> artists = event.track!.artists
-                .map((artist) => artist.uri!.split(":").last)
-                .toList();
+              LocationModel locationModel =
+                  await _locationService.getCurrentLocation();
+              List<String> artists = event.track!.artists
+                  .map((artist) => artist.uri!.split(":").last)
+                  .toList();
 
-            //has length one
-            List<ListeningBehaviourModel> behaviourModel =
-                await SpotifyUtil.extractArtistsAndGenres(
-                    _accessToken!, artists, true);
+              //has length one
+              List<ListeningBehaviourModel> behaviourModel =
+                  await SpotifyUtil.extractArtistsAndGenres(
+                      _accessToken!, artists, true);
 
-            ListeningBehaviourModel updatedModel = behaviourModel.first
-                .copyWith(
-                    latitude: locationModel.latitude,
-                    longitude: locationModel.longitude,
-                    activity: _latestActivity);
-            await _dbService.put(updatedModel);
+              lastSong = behaviourModel.first.copyWith(
+                  latitude: locationModel.latitude,
+                  longitude: locationModel.longitude,
+                  activity: _latestActivity);
+            }
           }
+          await FlutterForegroundTask.updateService(
+              notificationTitle: "Collecting",
+              notificationText: "Collecting your music choice");
+        } catch (e, stack) {
+          if (e is Map) {
+            String error = e["error"]["message"];
+            await FlutterForegroundTask.updateService(
+                notificationTitle: "ERROR", notificationText: error);
+          }
+          await Sentry.captureException(e, stackTrace: stack);
+          await FlutterForegroundTask.updateService(
+              notificationTitle: "ERROR", notificationText: e.toString());
         }
       });
-      _sub?.onError((error) => FlutterForegroundTask.updateService(
-          notificationTitle: "ERROR", notificationText: error.toString()));
     } catch (e, stack) {
-      FlutterForegroundTask.updateService(
+      await Sentry.captureException(e, stackTrace: stack);
+      await FlutterForegroundTask.updateService(
           notificationTitle: "Error", notificationText: e.toString());
     }
   }
