@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'package:auralia/logic/services/OauthKeySerivce.dart';
 import 'package:auralia/logic/services/PermissionService.dart';
+import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
 import 'package:auralia/logic/util/ForgroundServiceUtil.dart';
+import 'package:auralia/logic/util/iosTokenRefresh.dart';
 import 'package:auralia/logic/workerServices/ForegroundService.dart';
 import 'package:auralia/uiblocks/buttons/SettingsButton.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -47,7 +51,7 @@ class _HomePageState extends State<HomePage> {
                     alignment: Alignment.bottomCenter,
                     child: OutlinedButton(
                         onPressed: () async {
-                          //TODO: Refactor out
+                          //TODO: Refactor out!!!!
                           bool activityEnabled = await permissionService
                               .reqeuestActivityRecognition();
                           bool locationEnabled =
@@ -68,6 +72,12 @@ class _HomePageState extends State<HomePage> {
                                 style: Theme.of(context).textTheme.bodyLarge,
                               )).show(context);
                             } else {
+                              String jwt = Supabase.instance.client.auth
+                                  .currentSession!.accessToken;
+                              iOSTokenRefresh(SpotifyOauthKeyService(
+                                  jwt: jwt,
+                                  storageWrapperService:
+                                      SecureStorageWrapperService()));
                               await FlutterForegroundTask.startService(
                                   notificationTitle: "Collection",
                                   notificationText:
