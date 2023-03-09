@@ -11,9 +11,9 @@ import 'package:workmanager/workmanager.dart';
 void updateOauthAccessToken() {
   Workmanager().executeTask((taskName, inputData) async {
     try {
-      await initSentry(null);
+      await initSentry();
       bool hasNet = await InternetUtil.hasInternet();
-      Sentry.addBreadcrumb(Breadcrumb(
+      await Sentry.addBreadcrumb(Breadcrumb(
           message: "collectionService before initSupabase",
           data: {"hasInternet": hasNet},
           level: SentryLevel.info));

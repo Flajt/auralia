@@ -24,9 +24,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late final StreamSubscription _netSubscription;
   _HomePageState() {
-    _netSubscription = InternetUtil.connectionStateStream().listen((event) {
+    _netSubscription =
+        InternetUtil.connectionStateStream().listen((event) async {
       bool hasNet = event == InternetConnectionStatus.connected;
-      Sentry.addBreadcrumb(Breadcrumb(
+      await Sentry.addBreadcrumb(Breadcrumb(
           message: "HomePage Internet Check",
           data: {"hasNet": hasNet},
           level: SentryLevel.info));
