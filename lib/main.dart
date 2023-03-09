@@ -6,6 +6,7 @@ import 'package:auralia/logic/workerServices/collectionService.dart';
 import 'package:auralia/pages/HomePage.dart';
 import 'package:auralia/pages/LoginPage.dart';
 import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:workmanager/workmanager.dart';
 import 'logic/util/SaveOauthTokens.dart';
@@ -13,7 +14,7 @@ import 'logic/util/initSuperbase.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if(Platform.isAndroid){
+  if (Platform.isAndroid) {
     Workmanager().initialize(updateOauthAccessToken, isInDebugMode: false);
     Workmanager().registerPeriodicTask(
         "auralia_oauth_update_service", "Updates Spotify Access Token",
@@ -28,7 +29,6 @@ Future<void> main() async {
         initialDelay: const Duration(minutes: 5),
         backoffPolicy: BackoffPolicy.exponential);
   }
-
   await initSupabase();
   await initSentry(() => runApp(const MyApp()));
 }
@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [SentryNavigatorObserver()],
       title: 'Auralia',
       theme: ThemeData(
           colorSchemeSeed: const Color(0xff11FfEE), useMaterial3: true),
