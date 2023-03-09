@@ -1,5 +1,6 @@
 import 'package:auralia/logic/services/OauthKeySerivce.dart';
 import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
+import 'package:auralia/logic/util/InternetUtil.dart';
 import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/util/initSuperbase.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -11,6 +12,11 @@ void updateOauthAccessToken() {
   Workmanager().executeTask((taskName, inputData) async {
     try {
       await initSentry(null);
+      bool hasNet = await InternetUtil.hasInternet();
+      Sentry.addBreadcrumb(Breadcrumb(
+          message: "collectionService before initSupabase",
+          data: {"hasInternet": hasNet},
+          level: SentryLevel.info));
       final supabase = await initSupabase();
       String jwt = supabase.client.auth.currentSession!.accessToken;
       final oauthService = SpotifyOauthKeyService(

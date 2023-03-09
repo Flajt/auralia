@@ -9,6 +9,7 @@ import 'package:auralia/logic/services/LocationService.dart';
 import 'package:auralia/logic/services/OauthKeySerivce.dart';
 import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
 import 'package:auralia/logic/util/SpotifyUtil.dart';
+import 'package:auralia/logic/util/InternetUtil.dart';
 import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/util/initSuperbase.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
@@ -136,12 +137,22 @@ class CollectionHandler extends TaskHandler {
             await FlutterForegroundTask.updateService(
                 notificationTitle: "ERROR", notificationText: error);
           }
+          bool hasNet = await InternetUtil.hasInternet();
+          Sentry.addBreadcrumb(Breadcrumb(
+              message: "ForegroundService error 1",
+              data: {"hasInternet": hasNet},
+              level: SentryLevel.info));
           await Sentry.captureException(e, stackTrace: stack);
           await FlutterForegroundTask.updateService(
               notificationTitle: "ERROR", notificationText: e.toString());
         }
       });
     } catch (e, stack) {
+      bool hasNet = await InternetUtil.hasInternet();
+      Sentry.addBreadcrumb(Breadcrumb(
+          message: "ForegroundService error 2",
+          data: {"hasInternet": hasNet},
+          level: SentryLevel.info));
       hasError = true;
       await Sentry.captureException(e, stackTrace: stack);
       await FlutterForegroundTask.updateService(

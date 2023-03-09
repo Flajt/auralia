@@ -1,5 +1,6 @@
 import 'package:auralia/logic/services/BehaviourUploadService.dart';
 import 'package:auralia/logic/services/DBService.dart';
+import 'package:auralia/logic/util/InternetUtil.dart';
 import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/util/initSuperbase.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -9,7 +10,12 @@ import 'package:workmanager/workmanager.dart';
 Future<void> behaviourBackgroundService() async {
   Workmanager().executeTask((taskName, inputData) async {
     try {
+      final hasNet = await InternetUtil.hasInternet();
       await initSentry(null);
+      Sentry.addBreadcrumb(Breadcrumb(
+          message: "behaviourBackgroundService before initSupabase",
+          data: {"hasInternet": hasNet},
+          level: SentryLevel.info));
       final supabase = await initSupabase();
       final accessToken = supabase.client.auth.currentSession!.accessToken;
       final uploadService = BehaviourUploadService(
