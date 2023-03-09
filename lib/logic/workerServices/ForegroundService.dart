@@ -50,7 +50,7 @@ class CollectionHandler extends TaskHandler {
   }
 
   Future<void> initServices() async {
-    await initSentry(null);
+    await initSentry();
     if (Platform.isIOS) {
       String jwt =
           (await initSupabase()).client.auth.currentSession!.accessToken;
@@ -138,7 +138,7 @@ class CollectionHandler extends TaskHandler {
                 notificationTitle: "ERROR", notificationText: error);
           }
           bool hasNet = await InternetUtil.hasInternet();
-          Sentry.addBreadcrumb(Breadcrumb(
+          await Sentry.addBreadcrumb(Breadcrumb(
               message: "ForegroundService error 1",
               data: {"hasInternet": hasNet},
               level: SentryLevel.info));
@@ -149,7 +149,7 @@ class CollectionHandler extends TaskHandler {
       });
     } catch (e, stack) {
       bool hasNet = await InternetUtil.hasInternet();
-      Sentry.addBreadcrumb(Breadcrumb(
+      await Sentry.addBreadcrumb(Breadcrumb(
           message: "ForegroundService error 2",
           data: {"hasInternet": hasNet},
           level: SentryLevel.info));

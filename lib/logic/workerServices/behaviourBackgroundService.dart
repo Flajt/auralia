@@ -11,8 +11,8 @@ Future<void> behaviourBackgroundService() async {
   Workmanager().executeTask((taskName, inputData) async {
     try {
       final hasNet = await InternetUtil.hasInternet();
-      await initSentry(null);
-      Sentry.addBreadcrumb(Breadcrumb(
+      await initSentry();
+      await Sentry.addBreadcrumb(Breadcrumb(
           message: "behaviourBackgroundService before initSupabase",
           data: {"hasInternet": hasNet},
           level: SentryLevel.info));
