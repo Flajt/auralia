@@ -30,7 +30,8 @@ void entryPoint() {
 
 class CollectionHandler extends TaskHandler {
   late final FlutterActivityRecognition _activityService;
-  SpotifyOauthKeyService? _keyService;
+  SpotifyOauthKeyService _keyService = SpotifyOauthKeyService(
+      jwt: "jwt", storageWrapperService: SecureStorageWrapperService());
   String? _accessToken;
   StreamSubscription? _sub;
   String _latestActivity = ActivityType.UNKNOWN.name;
@@ -63,7 +64,7 @@ class CollectionHandler extends TaskHandler {
         await FlutterForegroundTask.restartService();
       });
     }
-    _accessToken = await _keyService!.accessToken;
+    _accessToken = await _keyService.accessToken;
     await SpotifySdk.connectToSpotifyRemote(
         clientId: "8faad74f47d8448d863224389ba98e8f",
         redirectUrl: "background://auralia",
