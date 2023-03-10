@@ -20,7 +20,7 @@ Future<void> main() async {
         "auralia_oauth_update_service", "Updates Spotify Access Token",
         constraints: Constraints(networkType: NetworkType.connected),
         initialDelay: const Duration(minutes: 5),
-        frequency: const Duration(minutes: 50));
+        frequency: const Duration(minutes: 45));
     Workmanager().initialize(behaviourBackgroundService, isInDebugMode: true);
     Workmanager().registerPeriodicTask(
         "auralia_upload_service", "Uploads data to backend",
