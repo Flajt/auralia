@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/workerServices/behaviourBackgroundService.dart';
-import 'package:auralia/logic/workerServices/collectionService.dart';
 import 'package:auralia/pages/HomePage.dart';
 import 'package:auralia/pages/LoginPage.dart';
 import 'package:flutter/material.dart';
