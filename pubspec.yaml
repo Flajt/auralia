@@ -52,6 +52,7 @@ dependencies:
   elegant_notification: ^1.6.4
   sentry_flutter: ^6.22.0
   internet_connection_checker: ^1.0.0+1
+  flutter_inappwebview: ^5.7.2+3
  
 
 dev_dependencies:
