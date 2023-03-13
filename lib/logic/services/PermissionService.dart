@@ -24,7 +24,8 @@ class PermissionService {
               description:
                   "This app uses approxmiate location data to recommend you music.",
               onPress: () async {
-                PermissionStatus success = await Permission.location.request();
+                PermissionStatus success =
+                    await Permission.locationWhenInUse.request();
                 Navigator.of(context).pop(success == PermissionStatus.granted);
               }));
       if (success ?? false == false) {
@@ -112,7 +113,7 @@ class PermissionService {
   }
 
   Future<bool> hasEnabledGps() async {
-    ServiceStatus status = await Permission.location.serviceStatus;
+    ServiceStatus status = await Permission.locationAlways.serviceStatus;
     return status == ServiceStatus.enabled;
   }
 }

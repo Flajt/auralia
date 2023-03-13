@@ -93,7 +93,8 @@ class _HomePageState extends State<HomePage> {
                               await tokenRefresh(SpotifyOauthKeyService(
                                   jwt: jwt,
                                   storageWrapperService:
-                                      SecureStorageWrapperService()));
+                                      SecureStorageWrapperService(),
+                                  baseUrl: "https://auralia.fly.dev"));
                               await FlutterForegroundTask.startService(
                                   notificationTitle: "Collection",
                                   notificationText:

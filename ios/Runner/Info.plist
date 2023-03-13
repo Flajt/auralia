@@ -41,12 +41,12 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Used to provide you with fitting music based on your location</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Used to provide you with fitting music based on your location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Used to provide your with fitting music based on your location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Used to provide you with fitting music based on your location</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Used to provide you with fitting music based on your location</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Used to provided you more fitting music based on your current activity.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

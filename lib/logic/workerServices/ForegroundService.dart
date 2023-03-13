@@ -103,6 +103,12 @@ class CollectionHandler extends TaskHandler {
                 event.track?.isEpisode == false &&
                 _latestSong != event.track?.name) {
               DateTime currentTime = DateTime.now();
+              if (hasError) {
+                await FlutterForegroundTask.updateService(
+                    notificationTitle: "Collecting",
+                    notificationText: "Collecting your music choice");
+                hasError = false;
+              }
               if (timerQueue.isNotEmpty) {
                 Duration difference =
                     currentTime.difference(timerQueue.removeFirst());
@@ -130,12 +136,6 @@ class CollectionHandler extends TaskHandler {
                   longitude: locationModel.longitude,
                   activity: _latestActivity);
             }
-          }
-          if (hasError) {
-            await FlutterForegroundTask.updateService(
-                notificationTitle: "Collecting",
-                notificationText: "Collecting your music choice");
-            hasError = false;
           }
         } catch (e, stack) {
           hasError = true;
