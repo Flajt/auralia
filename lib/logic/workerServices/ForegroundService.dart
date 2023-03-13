@@ -12,6 +12,7 @@ import 'package:auralia/logic/util/SpotifyUtil.dart';
 import 'package:auralia/logic/util/InternetUtil.dart';
 import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/util/initSuperbase.dart';
+import 'package:auralia/logic/workerServices/collectionService.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
 import 'package:auralia/models/regular/LocationModel.dart';
 import 'package:flutter_activity_recognition/flutter_activity_recognition.dart';
@@ -19,9 +20,10 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
+import 'package:workmanager/workmanager.dart';
 
 import '../services/DBService.dart';
-import '../util/iosTokenRefresh.dart';
+import '../util/tokenRefresh.dart';
 
 @pragma('vm:entry-point')
 void entryPoint() {
@@ -32,7 +34,7 @@ class CollectionHandler extends TaskHandler {
   late final FlutterActivityRecognition _activityService;
   SpotifyOauthKeyService _keyService = SpotifyOauthKeyService(
       jwt: "jwt", storageWrapperService: SecureStorageWrapperService());
-  String? _accessToken;
+  String _accessToken = "";
   StreamSubscription? _sub;
   String _latestActivity = ActivityType.UNKNOWN.name;
   late final LocationServiceA _locationService;
@@ -59,16 +61,13 @@ class CollectionHandler extends TaskHandler {
           jwt: jwt,
           storageWrapperService: SecureStorageWrapperService(),
           baseUrl: "https://auralia.fly.dev");
-      _timerSub = _timerStream.listen((event) async {
-        await iOSTokenRefresh(_keyService!);
-        await FlutterForegroundTask.restartService();
-      });
     }
-    _accessToken = await _keyService.accessToken;
+    _accessToken = (await _keyService.accessToken)!;
     await SpotifySdk.connectToSpotifyRemote(
         clientId: "8faad74f47d8448d863224389ba98e8f",
         redirectUrl: "background://auralia",
-        accessToken: _accessToken!);
+        accessToken: _accessToken);
+    await registerOAuthUpdate();
   }
 
   @override
@@ -76,6 +75,7 @@ class CollectionHandler extends TaskHandler {
     await _sub?.cancel();
     await _timerSub?.cancel();
     await SpotifySdk.disconnect();
+    await Workmanager().cancelByTag("update");
   }
 
   @override
@@ -86,11 +86,17 @@ class CollectionHandler extends TaskHandler {
     bool hasError = false;
     try {
       await initServices();
-      Stream myStreams = StreamGroup.merge(
-          [SpotifySdk.subscribePlayerState(), _activityService.activityStream]);
+      Stream myStreams = StreamGroup.merge([
+        SpotifySdk.subscribePlayerState(),
+        _activityService.activityStream,
+        _timerStream
+      ]);
       _sub = myStreams.listen((event) async {
         try {
-          if (event is Activity) {
+          if (event is int && Platform.isIOS) {
+            await tokenRefresh(_keyService);
+            await FlutterForegroundTask.restartService();
+          } else if (event is Activity) {
             _latestActivity = event.type.name;
           } else if (event is PlayerState) {
             if (event.track?.isPodcast == false &&
@@ -117,7 +123,7 @@ class CollectionHandler extends TaskHandler {
               //has length one
               List<ListeningBehaviourModel> behaviourModel =
                   await SpotifyUtil.extractArtistsAndGenres(
-                      _accessToken!, artists, true);
+                      _accessToken, artists, true);
 
               lastSong = behaviourModel.first.copyWith(
                   latitude: locationModel.latitude,
@@ -158,6 +164,18 @@ class CollectionHandler extends TaskHandler {
       await Sentry.captureException(e, stackTrace: stack);
       await FlutterForegroundTask.updateService(
           notificationTitle: "Error", notificationText: e.toString());
+    }
+  }
+
+  Future<void> registerOAuthUpdate() async {
+    if (Platform.isAndroid) {
+      await Workmanager().initialize(updateOauthAccessToken);
+      await Workmanager().registerPeriodicTask(
+          "auralia_oauth_update_service", "Updates Spotify Access Token",
+          tag: "update",
+          constraints: Constraints(networkType: NetworkType.connected),
+          initialDelay: const Duration(minutes: 5),
+          frequency: const Duration(minutes: 50));
     }
   }
 }
