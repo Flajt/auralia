@@ -4,7 +4,7 @@ import 'package:auralia/logic/services/PermissionService.dart';
 import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
 import 'package:auralia/logic/util/ForgroundServiceUtil.dart';
 import 'package:auralia/logic/util/InternetUtil.dart';
-import 'package:auralia/logic/util/iosTokenRefresh.dart';
+import 'package:auralia/logic/util/tokenRefresh.dart';
 import 'package:auralia/logic/workerServices/ForegroundService.dart';
 import 'package:auralia/uiblocks/buttons/SettingsButton.dart';
 import 'package:elegant_notification/elegant_notification.dart';
@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
                             } else {
                               String jwt = Supabase.instance.client.auth
                                   .currentSession!.accessToken;
-                              iOSTokenRefresh(SpotifyOauthKeyService(
+                              await tokenRefresh(SpotifyOauthKeyService(
                                   jwt: jwt,
                                   storageWrapperService:
                                       SecureStorageWrapperService()));
