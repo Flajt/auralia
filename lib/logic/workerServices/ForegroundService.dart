@@ -43,7 +43,7 @@ class CollectionHandler extends TaskHandler {
   final Queue<DateTime> timerQueue = Queue();
   ListeningBehaviourModel? lastSong;
   final Stream<int> _timerStream =
-      Stream.periodic(const Duration(minutes: 1), (eventCount) => eventCount);
+      Stream.periodic(const Duration(minutes: 50), (eventCount) => eventCount);
   final SecureStorageWrapperService secureStorageWrapperService =
       SecureStorageWrapperService();
   StreamSubscription? _timerSub;
@@ -75,6 +75,7 @@ class CollectionHandler extends TaskHandler {
     await _sub?.cancel();
     await _timerSub?.cancel();
     await SpotifySdk.disconnect();
+    await Workmanager().cancelByTag("update");
   }
 
   @override
@@ -168,13 +169,13 @@ class CollectionHandler extends TaskHandler {
 
   Future<void> registerOAuthUpdate() async {
     if (Platform.isAndroid) {
-      await Workmanager()
-          .initialize(updateOauthAccessToken, isInDebugMode: true);
+      await Workmanager().initialize(updateOauthAccessToken);
       await Workmanager().registerPeriodicTask(
           "auralia_oauth_update_service", "Updates Spotify Access Token",
+          tag: "update",
           constraints: Constraints(networkType: NetworkType.connected),
           initialDelay: const Duration(minutes: 5),
-          frequency: const Duration(minutes: 45));
+          frequency: const Duration(minutes: 50));
     }
   }
 }
