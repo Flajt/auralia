@@ -13,10 +13,7 @@ void updateOauthAccessToken() {
     try {
       await initSentry();
       bool hasNet = await InternetUtil.hasInternet();
-      await Sentry.addBreadcrumb(Breadcrumb(
-          message: "collectionService before initSupabase",
-          data: {"hasInternet": hasNet},
-          level: SentryLevel.info));
+
       final supabase = await initSupabase();
       String jwt = supabase.client.auth.currentSession!.accessToken;
       final oauthService = SpotifyOauthKeyService(
@@ -28,6 +25,13 @@ void updateOauthAccessToken() {
       if (hasAServiceRunning) {
         await FlutterForegroundTask.restartService();
       }
+      await Sentry.addBreadcrumb(Breadcrumb(
+          message: "collectionService before initSupabase",
+          data: {
+            "hasInternet": hasNet,
+            "foregroundService": hasAServiceRunning
+          },
+          level: SentryLevel.info));
       return Future.value(true);
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
