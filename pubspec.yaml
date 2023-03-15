@@ -53,6 +53,7 @@ dependencies:
   sentry_flutter: ^6.22.0
   internet_connection_checker: ^1.0.0+1
   flutter_inappwebview: ^5.7.2+3
+  data_table_2: ^2.4.1
  
 
 dev_dependencies:
