@@ -32,6 +32,11 @@ class SettingsDialog extends StatelessWidget {
                 child: ListView(
                   children: [
                     ListTile(
+                      title: const Text("Listening Behaviour"),
+                      onTap: () => Navigator.of(context)
+                          .pushNamed("/listeningBehaviour"),
+                    ),
+                    ListTile(
                       title: const Text("Upload History"),
                       onTap: () async {
                         try {
