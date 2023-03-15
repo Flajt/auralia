@@ -4,6 +4,7 @@ import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/workerServices/behaviourBackgroundService.dart';
 import 'package:auralia/pages/HomePage.dart';
 import 'package:auralia/pages/LoginPage.dart';
+import 'package:auralia/pages/UserBehaviourPage.dart';
 import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorObservers: [SentryNavigatorObserver()],
       title: 'Auralia',
+      routes: {"/listeningBehaviour": (context) => UserBehaviourPage()},
       theme: ThemeData(
           colorSchemeSeed: const Color(0xff11FfEE), useMaterial3: true),
       home: StreamBuilder(
