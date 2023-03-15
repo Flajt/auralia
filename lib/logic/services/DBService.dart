@@ -41,7 +41,18 @@ class IsarDBService extends DBServiceA {
   ///Get's the recent [ListeningBehaviourModel]s from the DB
   ///Uses [latestDTInMs] to get everything aferwards
   @override
-  Future<List<ListeningBehaviourModel>> getRecent(int latestDTInMs) async {
+  Future<List<ListeningBehaviourModel>> getRecent(int? latestDTInMs) async {
+    if (latestDTInMs == null) {
+      ListeningBehaviourModel? model = await _isar.listeningBehaviourModels
+          .filter()
+          .idGreaterThan(0, include: true)
+          .findFirst();
+      if (model == null) {
+        return [];
+      } else {
+        latestDTInMs = model.dateTimeInMis;
+      }
+    }
     List<ListeningBehaviourModel> data = await _isar.listeningBehaviourModels
         .filter()
         .dateTimeInMisGreaterThan(latestDTInMs)
