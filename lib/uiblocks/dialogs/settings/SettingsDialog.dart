@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:auralia/logic/services/BehaviourUploadService.dart';
 import 'package:auralia/logic/services/DBService.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SettingsDialog extends StatelessWidget {
@@ -43,7 +40,7 @@ class SettingsDialog extends StatelessWidget {
                           await BehaviourUploadService(
                                   dbServiceA: IsarDBService(),
                                   jwt: jwt,
-                                  baseUrl: "https://auarlia.fly.dev")
+                                  baseUrl: "https://auralia.fly.dev")
                               .uploadSongs();
                           // ignore: use_build_context_synchronously
                           ElegantNotification.success(
