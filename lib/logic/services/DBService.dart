@@ -6,8 +6,13 @@ import 'package:isar/isar.dart';
 class IsarDBService extends DBServiceA {
   late final Isar _isar;
   IsarDBService() {
-    _isar =
-        Isar.openSync([ListeningBehaviourModelSchema], inspector: kDebugMode);
+    Isar? isarInstance = Isar.getInstance();
+    if (isarInstance != null) {
+      _isar = isarInstance;
+    } else {
+      _isar =
+          Isar.openSync([ListeningBehaviourModelSchema], inspector: kDebugMode);
+    }
   }
   @override
   delete(ListeningBehaviourModel model) {
@@ -36,7 +41,18 @@ class IsarDBService extends DBServiceA {
   ///Get's the recent [ListeningBehaviourModel]s from the DB
   ///Uses [latestDTInMs] to get everything aferwards
   @override
-  Future<List<ListeningBehaviourModel>> getRecent(int latestDTInMs) async {
+  Future<List<ListeningBehaviourModel>> getRecent(int? latestDTInMs) async {
+    if (latestDTInMs == null) {
+      ListeningBehaviourModel? model = await _isar.listeningBehaviourModels
+          .filter()
+          .idGreaterThan(0, include: true)
+          .findFirst();
+      if (model == null) {
+        return [];
+      } else {
+        latestDTInMs = model.dateTimeInMis;
+      }
+    }
     List<ListeningBehaviourModel> data = await _isar.listeningBehaviourModels
         .filter()
         .dateTimeInMisGreaterThan(latestDTInMs)
@@ -47,5 +63,16 @@ class IsarDBService extends DBServiceA {
   @override
   Future<void> close() async {
     await _isar.close();
+  }
+
+  @override
+  Future<List<ListeningBehaviourModel>> getAll({bool sortAsc = false}) async {
+    final query =
+        _isar.listeningBehaviourModels.filter().idGreaterThan(0, include: true);
+    if (sortAsc) {
+      return await query.sortByDateTimeInMis().findAll();
+    } else {
+      return await query.sortByDateTimeInMisDesc().findAll();
+    }
   }
 }

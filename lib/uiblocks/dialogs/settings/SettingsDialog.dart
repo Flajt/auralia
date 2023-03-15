@@ -1,9 +1,7 @@
-import 'dart:io';
-
 import 'package:auralia/logic/services/BehaviourUploadService.dart';
 import 'package:auralia/logic/services/DBService.dart';
+import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SettingsDialog extends StatelessWidget {
@@ -30,16 +28,32 @@ class SettingsDialog extends StatelessWidget {
               Expanded(
                 child: ListView(
                   children: [
-                    Platform.isIOS
-                        ? ListTile(
-                            title: const Text("Upload History"),
-                            onTap: () async => await BehaviourUploadService(
-                                    dbServiceA: IsarDBService(),
-                                    jwt: jwt,
-                                    baseUrl: "https://auarlia.fly.dev")
-                                .uploadSongs(),
-                          )
-                        : const SizedBox(),
+                    ListTile(
+                      title: const Text("Listening Behaviour"),
+                      onTap: () => Navigator.of(context)
+                          .pushNamed("/listeningBehaviour"),
+                    ),
+                    ListTile(
+                      title: const Text("Upload History"),
+                      onTap: () async {
+                        try {
+                          await BehaviourUploadService(
+                                  dbServiceA: IsarDBService(),
+                                  jwt: jwt,
+                                  baseUrl: "https://auralia.fly.dev")
+                              .uploadSongs();
+                          // ignore: use_build_context_synchronously
+                          ElegantNotification.success(
+                                  description:
+                                      const Text("Data successfully uploaded"))
+                              .show(context);
+                        } catch (e) {
+                          ElegantNotification.error(
+                                  description: Text(e.toString()))
+                              .show(context);
+                        }
+                      },
+                    ),
                     ListTile(
                         title: const Text("Logout"),
                         onTap: () {
@@ -50,10 +64,6 @@ class SettingsDialog extends StatelessWidget {
                       child: ListTile(
                         title: Text("Delete Account"),
                       ),
-                    ),
-                    ListTile(
-                      title: const Text("Stop Personalization"),
-                      onTap: () => FlutterForegroundTask.stopService(),
                     ),
                     const AboutListTile(),
                   ],
