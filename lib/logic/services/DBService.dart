@@ -6,8 +6,13 @@ import 'package:isar/isar.dart';
 class IsarDBService extends DBServiceA {
   late final Isar _isar;
   IsarDBService() {
-    _isar =
-        Isar.openSync([ListeningBehaviourModelSchema], inspector: kDebugMode);
+    Isar? isarInstance = Isar.getInstance();
+    if (isarInstance != null) {
+      _isar = isarInstance;
+    } else {
+      _isar =
+          Isar.openSync([ListeningBehaviourModelSchema], inspector: kDebugMode);
+    }
   }
   @override
   delete(ListeningBehaviourModel model) {
@@ -47,5 +52,16 @@ class IsarDBService extends DBServiceA {
   @override
   Future<void> close() async {
     await _isar.close();
+  }
+
+  @override
+  Future<List<ListeningBehaviourModel>> getAll({bool sortAsc = false}) async {
+    final query =
+        _isar.listeningBehaviourModels.filter().idGreaterThan(0, include: true);
+    if (sortAsc) {
+      return await query.sortByDateTimeInMis().findAll();
+    } else {
+      return await query.sortByDateTimeInMisDesc().findAll();
+    }
   }
 }
