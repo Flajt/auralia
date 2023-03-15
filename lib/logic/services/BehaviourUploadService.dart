@@ -16,9 +16,8 @@ class BehaviourUploadService {
       required this.jwt,
       this.baseUrl = "http://192.168.0.6:8000"});
 
-  Future<int> get recentUploadTime async =>
-      (await SharedPreferences.getInstance()).getInt("songTime") ??
-      toUtcTime(DateTime.now()).millisecondsSinceEpoch;
+  Future<int?> get recentUploadTime async =>
+      (await SharedPreferences.getInstance()).getInt("songTime");
 
   Future<void> setRecentUploadTime(DateTime recentUploadTime) async {
     final instance = await SharedPreferences.getInstance();
