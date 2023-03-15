@@ -7,4 +7,5 @@ abstract class DBServiceA {
   update(ListeningBehaviourModel model);
   delete(ListeningBehaviourModel model);
   Future<void> close();
+  Future<List<ListeningBehaviourModel>> getAll({bool sortAsc = false});
 }
