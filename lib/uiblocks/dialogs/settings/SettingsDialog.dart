@@ -68,10 +68,6 @@ class SettingsDialog extends StatelessWidget {
                         title: Text("Delete Account"),
                       ),
                     ),
-                    ListTile(
-                      title: const Text("Stop Personalization"),
-                      onTap: () => FlutterForegroundTask.stopService(),
-                    ),
                     const AboutListTile(),
                   ],
                 ),
