@@ -1,5 +1,7 @@
+import 'package:auralia/bloc/SignInBloc/SignInBloc.dart';
 import 'package:auralia/uiblocks/buttons/SpotifyButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class LoginPage extends StatelessWidget {
@@ -28,7 +30,10 @@ class LoginPage extends StatelessWidget {
               "assets/listeningToMusic.svg",
               height: size.height * .4,
             ),
-            const SpotifyButton()
+            BlocProvider<SignInBloc>(
+              create: (context) => SignInBloc(),
+              child: const SpotifyButton(),
+            )
           ],
         ),
       ),
