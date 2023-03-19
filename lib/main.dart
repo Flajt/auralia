@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:auralia/logic/abstract/AuthServiceA.dart';
+import 'package:auralia/logic/abstract/DBServiceA.dart';
 import 'package:auralia/logic/services/AuthService.dart';
+import 'package:auralia/logic/services/DBService.dart';
 import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/webview/SpotifyChoreSafariBrowser.dart';
 import 'package:auralia/logic/workerServices/behaviourBackgroundService.dart';
@@ -24,6 +26,7 @@ Future<void> main() async {
   await getIt<AuthServiceA>().init();
   getIt
       .registerFactory<ChromeSafariBrowser>(() => SpotifyChromeSafariBrowser());
+  getIt.registerLazySingleton<DBServiceA>(() => IsarDBService());
   if (Platform.isAndroid) {
     await Workmanager()
         .initialize(behaviourBackgroundService, isInDebugMode: true);
