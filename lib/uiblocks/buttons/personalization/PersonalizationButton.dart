@@ -1,4 +1,3 @@
-
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -37,7 +36,7 @@ class _PersonalizationButtonState extends State<PersonalizationButton> {
                 if (hasPermissions.any((element) => element == false) ==
                     false) {
                   bool locationServiceEnabled =
-                      await widget.permissionService.hasEnabledGps();
+                      await widget.permissionService.hasEnabledGPS();
                   if (locationServiceEnabled == false) {
                     // ignore: use_build_context_synchronously
                     ElegantNotification.info(
@@ -83,8 +82,15 @@ class _PersonalizationButtonState extends State<PersonalizationButton> {
         await widget.permissionService.reqeuestActivityRecognition();
     bool locationEnabled =
         await widget.permissionService.requestLocationAccess();
+    bool backgroundLocationEnabled =
+        await widget.permissionService.requestBackgroundLocationAccess();
     bool notificationEnabled =
         await widget.permissionService.requestNotificationPermission();
-    return [activityEnabled, locationEnabled, notificationEnabled];
+    return [
+      activityEnabled,
+      locationEnabled,
+      backgroundLocationEnabled,
+      notificationEnabled
+    ];
   }
 }
