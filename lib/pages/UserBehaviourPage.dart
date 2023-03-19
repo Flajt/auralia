@@ -4,6 +4,7 @@ import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 
 import '../logic/services/BehaviourUploadService.dart';
 
@@ -41,7 +42,7 @@ class _UserBehaviourPageState extends State<UserBehaviourPage> {
   @override
   Widget build(BuildContext context) {
     final behaviourUploadService =
-        BehaviourUploadService(dbServiceA: dbService, jwt: "");
+        BehaviourUploadService(jwt: "", getIt: GetIt.I);
     Size size = MediaQuery.of(context).size;
     return SafeArea(
         child: Scaffold(
