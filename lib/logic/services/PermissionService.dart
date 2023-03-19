@@ -1,18 +1,19 @@
 import 'dart:io';
 
+import 'package:auralia/logic/abstract/PermissionServiceA.dart';
 import 'package:auralia/uiblocks/dialogs/PermissionDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class PermissionService {
+class PermissionService implements PermissionServiceA {
   final BuildContext context;
   PermissionService(this.context);
 
+  @override
   Future<bool> requestLocationAccess() async {
     PermissionStatus hasDefaultLocationPermission =
         await Permission.locationWhenInUse.status;
-    PermissionStatus hasBackgroundLocation =
-        await Permission.locationAlways.status;
+
     if (hasDefaultLocationPermission != PermissionStatus.granted) {
       // ignore: use_build_context_synchronously
       bool? success = await showDialog<bool>(
@@ -28,10 +29,15 @@ class PermissionService {
                     await Permission.locationWhenInUse.request();
                 Navigator.of(context).pop(success == PermissionStatus.granted);
               }));
-      if (success ?? false == false) {
-        return false;
-      }
+      return success ?? false;
     }
+    return true;
+  }
+
+  @override
+  Future<bool> requestBackgroundLocationAccess() async {
+    PermissionStatus hasBackgroundLocation =
+        await Permission.locationAlways.status;
     if (hasBackgroundLocation != PermissionStatus.granted) {
       // ignore: use_build_context_synchronously
       bool? success = await showDialog<bool>(
@@ -46,13 +52,12 @@ class PermissionService {
                     await Permission.locationAlways.request();
                 Navigator.of(context).pop(success == PermissionStatus.granted);
               }));
-      if (success ?? false == false) {
-        return false;
-      }
+      return success ?? false;
     }
     return true;
   }
 
+  @override
   Future<bool> reqeuestActivityRecognition() async {
     bool isAndroid = Platform.isAndroid;
     PermissionStatus activityRecognitionEnabled = isAndroid
@@ -61,7 +66,7 @@ class PermissionService {
 
     if (activityRecognitionEnabled != PermissionStatus.granted) {
       // ignore: use_build_context_synchronously
-      await showDialog(
+      bool? success = await showDialog<bool>(
           context: context,
           barrierDismissible: true,
           builder: (context) => PermissionDialog(
@@ -70,22 +75,18 @@ class PermissionService {
               description:
                   "This App uses your current activity to recommend to you fitting music.",
               onPress: () async {
-                Platform.isAndroid
+                PermissionStatus success = Platform.isAndroid
                     ? await Permission.activityRecognition.request()
                     : await Permission.sensors.request();
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(success == PermissionStatus.granted);
               }));
-      activityRecognitionEnabled = isAndroid
-          ? await Permission.activityRecognition.status
-          : await Permission.sensors.status;
-      if (activityRecognitionEnabled != PermissionStatus.granted) {
-        return false;
-      }
-      return true;
+
+      return success ?? false;
     }
     return true;
   }
 
+  @override
   Future<bool> requestNotificationPermission() async {
     Permission permission = Permission.notification;
     PermissionStatus permissionStatus = await permission.status;
@@ -104,15 +105,13 @@ class PermissionService {
                     await Permission.notification.request();
                 Navigator.of(context).pop(success == PermissionStatus.granted);
               }));
-      if (success ?? false == false) {
-        return false;
-      }
-      return true;
+      return success ?? false;
     }
     return true;
   }
 
-  Future<bool> hasEnabledGps() async {
+  @override
+  Future<bool> hasEnabledGPS() async {
     ServiceStatus status = await Permission.locationAlways.serviceStatus;
     return status == ServiceStatus.enabled;
   }
