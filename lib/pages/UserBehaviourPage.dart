@@ -41,8 +41,7 @@ class _UserBehaviourPageState extends State<UserBehaviourPage> {
 
   @override
   Widget build(BuildContext context) {
-    final behaviourUploadService =
-        BehaviourUploadService(jwt: "", getIt: GetIt.I);
+    final behaviourUploadService = BehaviourUploadService(getIt: GetIt.I);
     Size size = MediaQuery.of(context).size;
     return SafeArea(
         child: Scaffold(
