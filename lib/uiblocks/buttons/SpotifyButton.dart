@@ -11,7 +11,7 @@ class SpotifyButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final SignInBloc bloc = context.read<SignInBloc>();
     return ElevatedButton.icon(
-      onPressed: () async => bloc.add(const SignInWithOauth()),
+      onPressed: () => bloc.add(const SignInWithOauth()),
       icon: const Icon(LineIcons.spotify, size: 35),
       label: const Text("Sign In With Spotify"),
       style: ElevatedButton.styleFrom(
