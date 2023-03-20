@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:auralia/logic/abstract/AuthServiceA.dart';
 import 'package:auralia/logic/abstract/DBServiceA.dart';
 import 'package:auralia/logic/util/toUtcTime.dart';
 import 'package:get_it/get_it.dart';
@@ -12,13 +13,11 @@ class BehaviourUploadService implements BehaviourUploadServiceA {
   late final DBServiceA dbServiceA;
   final GetIt getIt;
   final String baseUrl;
-  final String jwt;
-  //TODO: Create provider with basic values
+  late final AuthServiceA _authServiceA;
   BehaviourUploadService(
-      {required this.jwt,
-      required this.getIt,
-      this.baseUrl = "http://192.168.0.6:8000"}) {
+      {required this.getIt, this.baseUrl = "http://192.168.0.6:8000"}) {
     dbServiceA = getIt<DBServiceA>();
+    _authServiceA = getIt<AuthServiceA>();
   }
 
   @override
@@ -42,6 +41,8 @@ class BehaviourUploadService implements BehaviourUploadServiceA {
       jsonModels.add(behaviour.toJson());
     }
     if (jsonModels.isNotEmpty) {
+      await _authServiceA.init();
+      String jwt = await _authServiceA.accessToken;
       DateTime now = DateTime.now().toUtc();
       String encodedBody = jsonEncode({"behaviour": jsonModels});
       http.Response resp = await http.post(Uri.parse("$baseUrl/add-songs"),
