@@ -148,7 +148,7 @@ class CollectionHandler extends TaskHandler {
                 level: SentryLevel.info));
             await Sentry.captureException(e, stackTrace: stack);
             await _collectionForegroundService.updateService(
-                "ERROR2", e.toString());
+                "ERROR", e.toString());
           }
         }
       });
