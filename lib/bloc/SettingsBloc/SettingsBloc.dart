@@ -18,9 +18,8 @@ class SettingsBloc extends Bloc<SettingsBlocEvent, SettingsBlocState> {
   Future<void> _uploadBehaviour(
       SettingsBlocEvent event, Emitter emitter) async {
     try {
-      final accessToken = await _authService.accessToken;
       final service = BehaviourUploadService(
-          jwt: accessToken, getIt: _getIt, baseUrl: "https://auralia.fly.dev");
+          getIt: _getIt, baseUrl: "https://auralia.fly.dev");
       bool hasUploaded = await service.uploadSongs();
       if (hasUploaded) {
         emitter(SuccessUploadingBehaviour());
