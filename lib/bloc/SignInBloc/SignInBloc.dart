@@ -25,9 +25,11 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
           options: ChromeSafariBrowserClassOptions(
               android: AndroidChromeCustomTabsOptions(
                   shareState: CustomTabsShareState.SHARE_STATE_OFF,
-                  isSingleInstance: true)));
+                  isSingleInstance: false)));
       emit(HasSignedIn());
+      await _chromeSafariBrowser.close();
     } catch (e, stackT) {
+      await _chromeSafariBrowser.close();
       emit(SignInError(errorMsg: e.toString(), stackTrace: stackT));
     }
   }
