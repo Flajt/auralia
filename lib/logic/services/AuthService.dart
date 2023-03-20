@@ -1,7 +1,14 @@
 import 'package:auralia/logic/abstract/AuthServiceA.dart';
+import 'package:auralia/logic/abstract/OauthKeyServiceA.dart';
+import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService implements AuthServiceA {
+  late final OauthKeyServiceA _keyServiceA;
+  final _getIt = GetIt.I;
+  AuthService() {
+    _keyServiceA = _getIt<OauthKeyServiceA>();
+  }
   @override
   Future<String> get accessToken async =>
       Supabase.instance.client.auth.currentSession!.accessToken;
@@ -36,5 +43,11 @@ class AuthService implements AuthServiceA {
     } catch (e, stack) {
       Supabase.instance;
     }
+  }
+
+  @override
+  Future<void> refreshAccessToken() async {
+    String jwt = await accessToken;
+    await _keyServiceA.updateAccessToken(jwt);
   }
 }

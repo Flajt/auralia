@@ -13,4 +13,7 @@ abstract class AuthServiceA {
 
   ///Retrives user accesstoken
   Future<String> get accessToken;
+
+  ///Refreshes the users oauth access token
+  Future<void> refreshAccessToken();
 }
