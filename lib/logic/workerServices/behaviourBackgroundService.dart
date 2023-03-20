@@ -15,7 +15,6 @@ Future<void> behaviourBackgroundService() async {
       await registerServices();
       final hasNet = await InternetUtil.hasInternet();
       final GetIt getIt = GetIt.I;
-      getIt.registerSingleton<DBServiceA>(IsarDBService());
       await initSentry();
       await Sentry.addBreadcrumb(Breadcrumb(
           message: "behaviourBackgroundService before upload",
