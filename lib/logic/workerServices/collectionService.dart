@@ -1,11 +1,7 @@
 import 'package:auralia/logic/abstract/CollectionForegroundServiceA.dart';
-import 'package:auralia/logic/services/AuthService.dart';
-import 'package:auralia/logic/services/ForegroundServices/CollectionForegroundService.dart';
-import 'package:auralia/logic/services/OauthKeySerivce.dart';
 import 'package:auralia/logic/util/InternetUtil.dart';
 import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/util/registerServices.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:workmanager/workmanager.dart';
@@ -20,14 +16,15 @@ void updateOauthAccessToken() {
       await registerServices();
       final getIt = GetIt.I;
       bool hasNet = await InternetUtil.hasInternet();
+      CollectionForegroundServiceA foregroundService =
+          getIt<CollectionForegroundServiceA>();
       final authService = getIt<AuthServiceA>();
       await authService.init();
       await authService.refreshAccessToken();
 
-      bool hasAServiceRunning =
-          await getIt<CollectionForegroundServiceA>().isServiceRunning();
+      bool hasAServiceRunning = await foregroundService.isServiceRunning();
       if (hasAServiceRunning) {
-        await getIt<CollectionForegroundServiceA>().restartService();
+        await foregroundService.restartService();
       }
       await Sentry.addBreadcrumb(Breadcrumb(
           message: "collectionService before initSupabase",
