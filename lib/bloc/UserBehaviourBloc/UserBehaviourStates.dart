@@ -29,3 +29,8 @@ class UserBehaviourHasError extends UserBehaviourState {
   @override
   List<Object?> get props => [errorMsg, stackT];
 }
+
+class IsLoadingUserBehaviourData extends UserBehaviourState {
+  @override
+  List<Object?> get props => [];
+}

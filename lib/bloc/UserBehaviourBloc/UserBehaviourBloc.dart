@@ -18,6 +18,7 @@ class UserBehaviourBloc extends Bloc<UserBehaviourEvent, UserBehaviourState> {
 
   void _getData(UserBehaviourEvent event, Emitter emitter) async {
     try {
+      emitter(IsLoadingUserBehaviourData());
       DateTime? dateTime;
       List<ListeningBehaviourModel> models = await _dbService.getAll();
       if (models.isNotEmpty) {
