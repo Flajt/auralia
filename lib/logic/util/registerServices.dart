@@ -2,11 +2,13 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get_it/get_it.dart';
 
 import '../abstract/AuthServiceA.dart';
+import '../abstract/BehaviourUploadServiceA.dart';
 import '../abstract/CollectionForegroundServiceA.dart';
 import '../abstract/DBServiceA.dart';
 import '../abstract/OauthKeyServiceA.dart';
 import '../abstract/SecureStorageServiceA.dart';
 import '../services/AuthService.dart';
+import '../services/BehaviourUploadService.dart';
 import '../services/DBService.dart';
 import '../services/ForegroundServices/CollectionForegroundService.dart';
 import '../services/OauthKeySerivce.dart';
@@ -27,4 +29,6 @@ Future<void> registerServices() async {
 
   getIt.registerLazySingleton<CollectionForegroundServiceA>(
       () => CollectionForegroundService());
+  getIt.registerFactory<BehaviourUploadServiceA>(
+      () => BehaviourUploadService(getIt: getIt));
 }
