@@ -1,29 +1,30 @@
-import 'package:auralia/logic/services/OauthKeySerivce.dart';
-import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
+import 'package:auralia/logic/abstract/CollectionForegroundServiceA.dart';
 import 'package:auralia/logic/util/InternetUtil.dart';
 import 'package:auralia/logic/util/initSentry.dart';
-import 'package:auralia/logic/util/initSuperbase.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:auralia/logic/util/registerServices.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:workmanager/workmanager.dart';
+
+import '../abstract/AuthServiceA.dart';
 
 @pragma('vm:entry-point')
 void updateOauthAccessToken() {
   Workmanager().executeTask((taskName, inputData) async {
     try {
       await initSentry();
+      await registerServices();
+      final getIt = GetIt.I;
       bool hasNet = await InternetUtil.hasInternet();
+      CollectionForegroundServiceA foregroundService =
+          getIt<CollectionForegroundServiceA>();
+      final authService = getIt<AuthServiceA>();
+      await authService.init();
+      await authService.refreshAccessToken();
 
-      final supabase = await initSupabase();
-      String jwt = supabase.client.auth.currentSession!.accessToken;
-      final oauthService = SpotifyOauthKeyService(
-          jwt: jwt,
-          storageWrapperService: SecureStorageWrapperService(),
-          baseUrl: "https://auralia.fly.dev");
-      await oauthService.updateAccessToken();
-      bool hasAServiceRunning = await FlutterForegroundTask.isRunningService;
+      bool hasAServiceRunning = await foregroundService.isServiceRunning();
       if (hasAServiceRunning) {
-        await FlutterForegroundTask.restartService();
+        await foregroundService.restartService();
       }
       await Sentry.addBreadcrumb(Breadcrumb(
           message: "collectionService before initSupabase",

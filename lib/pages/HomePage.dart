@@ -1,13 +1,18 @@
 import 'dart:async';
+import 'package:auralia/bloc/CollectionForegroundBloc/CollectionForegroundServiceBloc.dart';
+import 'package:auralia/bloc/PermissionBloc/PermissionBloc.dart';
 import 'package:auralia/logic/services/PermissionService.dart';
-import 'package:auralia/logic/util/ForgroundServiceUtil.dart';
 import 'package:auralia/logic/util/InternetUtil.dart';
 import 'package:auralia/uiblocks/buttons/SettingsButton.dart';
 import 'package:auralia/uiblocks/buttons/personalization/PersonalizationButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+
+import '../logic/abstract/PermissionServiceA.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -32,13 +37,20 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    initForeGroundService();
   }
 
   @override
   void dispose() {
     _netSubscription.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (GetIt.I.isRegistered<PermissionServiceA>() == false) {
+      GetIt.I.registerSingleton<PermissionServiceA>(PermissionService(context));
+    }
+    super.didChangeDependencies();
   }
 
   @override
@@ -59,8 +71,14 @@ class _HomePageState extends State<HomePage> {
                           textAlign: TextAlign.center)),
                   Align(
                       alignment: Alignment.bottomCenter,
-                      child: PersonalizationButton(
-                          permissionService: PermissionService(context)))
+                      child: MultiBlocProvider(
+                        providers: [
+                          BlocProvider(create: (context) => PermissionBloc()),
+                          BlocProvider(
+                              create: (context) => CollectionForegroundBloc())
+                        ],
+                        child: const PersonalizationButton(),
+                      ))
                 ]))),
       ),
     );

@@ -1,90 +1,87 @@
-
+import 'package:auralia/bloc/CollectionForegroundBloc/CollectionForegroundServiceBloc.dart';
+import 'package:auralia/bloc/CollectionForegroundBloc/CollectionForegroundServiceEvents.dart';
+import 'package:auralia/bloc/PermissionBloc/PermissionBlocStates.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../logic/services/OauthKeySerivce.dart';
-import '../../../logic/services/PermissionService.dart';
-import '../../../logic/services/SecureStorageWrapperService.dart';
-import '../../../logic/util/tokenRefresh.dart';
-import '../../../logic/workerServices/ForegroundService.dart';
+import '../../../bloc/CollectionForegroundBloc/CollectionForegroundServiceStates.dart';
+import '../../../bloc/PermissionBloc/PermissionBloc.dart';
+import '../../../bloc/PermissionBloc/PermissionBlocEvents.dart';
 
-class PersonalizationButton extends StatefulWidget {
+class PersonalizationButton extends StatelessWidget {
   const PersonalizationButton({
     super.key,
-    required this.permissionService,
   });
-
-  final PermissionService permissionService;
-
   @override
-  State<PersonalizationButton> createState() => _PersonalizationButtonState();
-}
-
-class _PersonalizationButtonState extends State<PersonalizationButton> {
-  bool isRunning = false;
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: FlutterForegroundTask.isRunningService,
-        builder: (context, snapshot) {
-          isRunning = snapshot.data ?? false;
+  build(BuildContext context) {
+    context
+        .read<CollectionForegroundBloc>()
+        .add(IsCollectionForegroundServiceRunning());
+    return BlocListener<PermissionBloc, PermissionBlocState>(
+      listener: (context, state) async {
+        if (state is HasNotAllPermissions) {
+          // ignore: use_build_context_synchronously
+          ElegantNotification.error(
+                  description:
+                      const Text("All services are required, pelase try again"))
+              .show(context);
+        } else if (state is GPSIsDisabled) {
+          ElegantNotification.info(
+              description: Text(
+            "Please enable your GPS!",
+            style: Theme.of(context).textTheme.bodyLarge,
+          )).show(context);
+        } else if (state is HasAllPermissions) {
+          final bloc = context.read<CollectionForegroundBloc>();
+          if (bloc.state is CollectionForegroundServiceIsRunning) {
+            bloc.add(StopCollectionForegroundService());
+          } else {
+            bloc.add(StartCollectionForegroundService());
+          }
+        }
+      },
+      child: BlocConsumer<CollectionForegroundBloc,
+          CollectionForegroundServiceState>(
+        buildWhen: (prev, curr) => true,
+        listener: (context, state) {
+          if (state is CollectionForegroundServiceErrorState) {
+            ElegantNotification.error(description: Text(state.errorMsg))
+                .show(context);
+          }
+        },
+        builder: (context, state) {
           return OutlinedButton(
             onPressed: () async {
-              if (!isRunning) {
-                List<bool> hasPermissions = await _hasAllPermissions();
-                if (hasPermissions.any((element) => element == false) ==
-                    false) {
-                  bool locationServiceEnabled =
-                      await widget.permissionService.hasEnabledGps();
-                  if (locationServiceEnabled == false) {
-                    // ignore: use_build_context_synchronously
-                    ElegantNotification.info(
-                        description: Text(
-                      "Please enable your GPS!",
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    )).show(context);
-                  } else {
-                    String jwt = Supabase
-                        .instance.client.auth.currentSession!.accessToken;
-                    await tokenRefresh(SpotifyOauthKeyService(
-                        jwt: jwt,
-                        storageWrapperService: SecureStorageWrapperService(),
-                        baseUrl: "https://auralia.fly.dev"));
-                    await FlutterForegroundTask.startService(
-                        notificationTitle: "Collection",
-                        notificationText: "Collecting your music taste",
-                        callback: entryPoint);
-                    setState(() {});
-                  }
-                } else {
-                  // ignore: use_build_context_synchronously
-                  ElegantNotification.error(
-                          description: const Text(
-                              "All services are required, pelase try again"))
-                      .show(context);
-                }
+              if (isActive(state)) {
+                context
+                    .read<CollectionForegroundBloc>()
+                    .add(StopCollectionForegroundService());
               } else {
-                await FlutterForegroundTask.stopService();
-                setState(() {});
+                context.read<PermissionBloc>().add(HasPermissions());
               }
             },
-            style: isRunning
+            style: isActive(state)
                 ? OutlinedButton.styleFrom(foregroundColor: Colors.redAccent)
                 : null,
-            child: Text("${isRunning ? "Stop" : "Enable"} personalization"),
+            child:
+                Text("${isActive(state) ? "Stop" : "Enable"} personalization"),
           );
-        });
+        },
+      ),
+    );
   }
 
-  Future<List<bool>> _hasAllPermissions() async {
-    bool activityEnabled =
-        await widget.permissionService.reqeuestActivityRecognition();
-    bool locationEnabled =
-        await widget.permissionService.requestLocationAccess();
-    bool notificationEnabled =
-        await widget.permissionService.requestNotificationPermission();
-    return [activityEnabled, locationEnabled, notificationEnabled];
+  bool isActive(CollectionForegroundServiceState state) {
+    if (state is CollectionForegroundServiceIsRunning) {
+      return true;
+    } else if (state is CollectionForegroundServiceIsNotRunning) {
+      return false;
+    } else if (state is HasRestartedCollectionForegroundService) {
+      return true;
+    } else if (state is HasStartedCollectionForegroundService) {
+      return true;
+    }
+    return false;
   }
 }

@@ -1,11 +1,13 @@
+import 'package:auralia/bloc/UserBehaviourBloc/UserBehaviourStates.dart';
 import 'package:auralia/logic/abstract/DBServiceA.dart';
 import 'package:auralia/logic/services/DBService.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../logic/services/BehaviourUploadService.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/UserBehaviourBloc/UserBehaviourBloc.dart';
+import '../bloc/UserBehaviourBloc/UserBehaviourEvents.dart';
 
 class UserBehaviourPage extends StatefulWidget {
   const UserBehaviourPage({Key? key}) : super(key: key);
@@ -33,6 +35,12 @@ class _UserBehaviourPageState extends State<UserBehaviourPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    context.read<UserBehaviourBloc>().add(GetUserData());
+    super.didChangeDependencies();
+  }
+
+  @override
   void dispose() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     super.dispose();
@@ -40,65 +48,50 @@ class _UserBehaviourPageState extends State<UserBehaviourPage> {
 
   @override
   Widget build(BuildContext context) {
-    final behaviourUploadService =
-        BehaviourUploadService(dbServiceA: dbService, jwt: "");
     Size size = MediaQuery.of(context).size;
     return SafeArea(
         child: Scaffold(
             body: SizedBox.fromSize(
                 size: size,
-                child: FutureBuilder(
-                    future: dbService.getAll(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                        final data = snapshot.data!;
+                child: BlocBuilder<UserBehaviourBloc, UserBehaviourState>(
+                    builder: (context, state) {
+                  if (state is HasUserBehaviourData) {
+                    final data = state.models;
 
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text("Your Listening Behaviour",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: FutureBuilder(
-                                  future:
-                                      behaviourUploadService.recentUploadTime,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.data != null) {
-                                      return Text(
-                                          "Latest upload date: ${DateTime.fromMillisecondsSinceEpoch(snapshot.data!)}");
-                                    }
-                                    return const Text(
-                                        "Latest upload data: Unknown");
-                                  }),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: DataTable2(
-                                  minWidth: 50,
-                                  dataRowHeight: 100,
-                                  columns: columns2,
-                                  rows: convertBehaviourToRowEntry(data)),
-                            ),
-                          ],
-                        );
-                      } else if (snapshot.connectionState ==
-                              ConnectionState.waiting ||
-                          snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator.adaptive();
-                      } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-                        return const Center(
-                          child: Text(
-                              "You didn't seem to have listened to musics"),
-                        );
-                      }
-                      return const Center(child: Text("This is odd...."));
-                    }))));
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("Your Listening Behaviour",
+                              style:
+                                  Theme.of(context).textTheme.headlineMedium),
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: state.dateTime != null
+                                ? Text("Latest upload date: ${state.dateTime}")
+                                : const Text("Last upload date: UNKNOWN")),
+                        Expanded(
+                          flex: 2,
+                          child: DataTable2(
+                              minWidth: 50,
+                              dataRowHeight: 100,
+                              columns: columns2,
+                              rows: convertBehaviourToRowEntry(data)),
+                        ),
+                      ],
+                    );
+                  } else if (state is IsLoadingUserBehaviourData) {
+                    return const Center(
+                        child: CircularProgressIndicator.adaptive());
+                  } else if (state is HasNoUserBehaviourData) {
+                    return const Center(
+                      child: Text("You didn't seem to have listened to musics"),
+                    );
+                  }
+                  return const Center(child: Text("This is odd...."));
+                }))));
   }
 
   List<DataRow> convertBehaviourToRowEntry(List<ListeningBehaviourModel> data) {
