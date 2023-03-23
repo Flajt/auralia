@@ -54,9 +54,11 @@ dependencies:
   internet_connection_checker: ^1.0.0+1
   flutter_inappwebview: ^5.7.2+3
   data_table_2: ^2.4.1
+  bloc: ^8.1.1
   flutter_bloc: ^8.1.2
   get_it: ^7.2.0
   equatable: ^2.0.5
+  bloc_concurrency: ^0.2.1
  
 
 dev_dependencies:
