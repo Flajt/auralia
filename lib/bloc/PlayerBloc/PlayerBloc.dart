@@ -17,10 +17,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   late final AuthServiceA _authService;
   final Stream<int> _refreshTokenCounterStream =
       Stream.periodic(const Duration(minutes: 50), (count) => count);
-  StreamSubscription? _refreshTokenSub;
+  late final StreamSubscription<int> _refreshTokenSub;
   PlayerBloc() : super(InitalPlayerState()) {
     _musicService = _getIt<MusicServiceA>();
     _authService = _getIt<AuthServiceA>();
+    _refreshTokenCounterStream.listen((event) => add(IRestart()));
     on<InitPlayer>(_init, transformer: restartable());
     on<Play>(_onPlay);
     on<Stop>(_onStop);
@@ -31,11 +32,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   Future<void> _init(PlayerEvent event, Emitter<PlayerState> emitter) async {
     try {
       if (state is InitalPlayerState || state is IsRestarting) {
-        await _musicService.init();
-        _refreshTokenSub?.cancel();
-        _refreshTokenSub =
-            _refreshTokenCounterStream.listen((event) => add(IRestart()));
         emitter(InitalizingPlayer());
+        await _musicService.init();
         emitter(HasInitalizedPlayer());
         bool isActive = await _musicService.isActive;
         bool isIOS = Platform.isIOS;
@@ -71,6 +69,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         final currentState = await _musicService.subscribePlayerState().first;
         emitter(IsPlayingSong(currentState));
       } else if (state is HasInitalizedPlayer && Platform.isIOS) {
+        add(InitPlayer());
+      } else if (state is PlayerHasError) {
         add(InitPlayer());
       }
     } catch (e, stackT) {
