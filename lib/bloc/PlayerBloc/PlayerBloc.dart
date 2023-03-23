@@ -21,7 +21,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   PlayerBloc() : super(InitalPlayerState()) {
     _musicService = _getIt<MusicServiceA>();
     _authService = _getIt<AuthServiceA>();
-    _refreshTokenCounterStream.listen((event) => add(IRestart()));
+    _refreshTokenSub =
+        _refreshTokenCounterStream.listen((event) => add(IRestart()));
     on<InitPlayer>(_init, transformer: restartable());
     on<Play>(_onPlay);
     on<Stop>(_onStop);
@@ -142,7 +143,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   @override
   Future<void> close() async {
-    _refreshTokenSub?.cancel();
+    _refreshTokenSub.cancel();
     await _musicService.disconnect();
     return super.close();
   }
