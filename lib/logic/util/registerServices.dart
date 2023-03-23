@@ -1,3 +1,5 @@
+import 'package:auralia/logic/abstract/MusicServiceA.dart';
+import 'package:auralia/logic/services/SpotifyService.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get_it/get_it.dart';
 
@@ -31,4 +33,5 @@ Future<void> registerServices() async {
       () => CollectionForegroundService());
   getIt.registerFactory<BehaviourUploadServiceA>(
       () => BehaviourUploadService(getIt: getIt));
+  getIt.registerSingleton<MusicServiceA>(SpotifyService());
 }

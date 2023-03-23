@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:workmanager/workmanager.dart';
+import 'bloc/PlayerBloc/PlayerBloc.dart';
 import 'bloc/UserBehaviourBloc/UserBehaviourBloc.dart';
 import 'logic/util/SaveOauthTokens.dart';
 import 'logic/util/registerServices.dart';
@@ -56,7 +57,10 @@ class MyApp extends StatelessWidget {
             if (snapshot.data?.event == AuthChangeEvent.signedIn) {
               saveOauthTokens(snapshot);
             }
-            return const HomePage();
+            return BlocProvider(
+              create: (context) => PlayerBloc(),
+              child: const HomePage(),
+            );
           } else {
             return const LoginPage();
           }
