@@ -61,7 +61,7 @@ class InitalizingPlayer extends PlayerState {
 
 class HasInitalizedPlayer extends PlayerState {
   @override
-  List<Object?> get props => [null];
+  List<Object?> get props => [];
 }
 
 class IsRestarting extends PlayerState {
