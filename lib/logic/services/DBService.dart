@@ -1,17 +1,21 @@
 import 'package:auralia/logic/abstract/DBServiceA.dart';
+import 'package:auralia/logic/abstract/PathSeriveA.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
 class IsarDBService extends DBServiceA {
   late final Isar _isar;
+  final GetIt _getIt = GetIt.I;
+
   IsarDBService() {
     Isar? isarInstance = Isar.getInstance();
     if (isarInstance != null) {
       _isar = isarInstance;
     } else {
-      _isar =
-          Isar.openSync([ListeningBehaviourModelSchema], inspector: kDebugMode);
+      _isar = Isar.openSync([ListeningBehaviourModelSchema],
+          inspector: kDebugMode, directory: _getIt<PathServiceA>().appDocPath);
     }
   }
   @override

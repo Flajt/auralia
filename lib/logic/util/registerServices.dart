@@ -1,4 +1,5 @@
 import 'package:auralia/logic/abstract/MusicServiceA.dart';
+import 'package:auralia/logic/abstract/PathSeriveA.dart';
 import 'package:auralia/logic/services/SpotifyService.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get_it/get_it.dart';
@@ -14,6 +15,7 @@ import '../services/BehaviourUploadService.dart';
 import '../services/DBService.dart';
 import '../services/ForegroundServices/CollectionForegroundService.dart';
 import '../services/OauthKeySerivce.dart';
+import '../services/PathService.dart';
 import '../services/SecureStorageWrapperService.dart';
 import '../webview/SpotifyChoreSafariBrowser.dart';
 
@@ -34,4 +36,6 @@ Future<void> registerServices() async {
   getIt.registerFactory<BehaviourUploadServiceA>(
       () => BehaviourUploadService(getIt: getIt));
   getIt.registerSingleton<MusicServiceA>(SpotifyService());
+  getIt.registerSingleton<PathServiceA>(PathService());
+  await getIt<PathService>().init();
 }
