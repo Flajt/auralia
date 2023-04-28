@@ -203,5 +203,5 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     await _refreshTokenSub.cancel();
     await _testSub?.cancel();
     await _musicService.disconnect();
-
+  }
 }
