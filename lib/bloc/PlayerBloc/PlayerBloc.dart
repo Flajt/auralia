@@ -16,6 +16,7 @@ import 'package:auralia/logic/abstract/models/PlayerStateModelA.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../logic/abstract/ActivityServiceA.dart';
 import '../../models/regular/LocationModel.dart';
@@ -56,19 +57,31 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     try {
       if (state is InitalPlayerState || state is IsRestarting) {
         emitter(InitalizingPlayer());
-        await _musicService.init();
-        emitter(HasInitalizedPlayer());
         bool isActive = await _musicService.isActive;
         bool isIOS = Platform.isIOS;
 
         if (isIOS) {
           if (isActive) {
+            await _musicService.init();
+            emitter(HasInitalizedPlayer());
             return emitter.forEach<PlayerStateModelA>(
                 _musicService.subscribePlayerState(), onData: (data) {
               return data.isPaused ? IsPaused(data) : IsPlayingSong(data);
             });
           }
         } else {
+          await _musicService.init();
+          emitter(HasInitalizedPlayer());
+          return emitter.forEach<PlayerStateModelA>(
+              _musicService.subscribePlayerState(), onData: (data) {
+            return data.isPaused ? IsPaused(data) : IsPlayingSong(data);
+          });
+        }
+      } else if (Platform.isIOS && state is InitalizingPlayer) {
+        bool isActive = await _musicService.isActive;
+        if (isActive) {
+          await _musicService.init();
+          emitter(HasInitalizedPlayer());
           return emitter.forEach<PlayerStateModelA>(
               _musicService.subscribePlayerState(), onData: (data) {
             return data.isPaused ? IsPaused(data) : IsPlayingSong(data);
@@ -94,7 +107,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       } else if (state is IsPlayingSong) {
         final currentState = await _musicService.subscribePlayerState().first;
         emitter(IsPlayingSong(currentState));
-      } else if (state is HasInitalizedPlayer && Platform.isIOS) {
+      } else if (state is InitalizingPlayer && Platform.isIOS) {
         add(InitPlayer());
       } else if (state is PlayerHasError) {
         add(InitPlayer());
@@ -190,6 +203,5 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     await _refreshTokenSub.cancel();
     await _testSub?.cancel();
     await _musicService.disconnect();
-    return super.close();
-  }
+
 }
