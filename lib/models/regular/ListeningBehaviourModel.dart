@@ -5,6 +5,7 @@ part "ListeningBehaviourModel.g.dart";
 @collection
 class ListeningBehaviourModel {
   Id id = Isar.autoIncrement;
+  final String songId;
   final List<String> artists;
   final List<String> genres;
   final double latitude;
@@ -13,13 +14,14 @@ class ListeningBehaviourModel {
   final int dateTimeInMis;
 
   ListeningBehaviourModel(this.artists, this.genres, this.latitude,
-      this.longitude, this.activity, this.dateTimeInMis);
+      this.longitude, this.activity, this.dateTimeInMis, this.songId);
   Map<String, dynamic> toJson() => {
         "artists": artists,
         "genres": genres,
         "latitude": latitude,
         "logitude": longitude,
         "activity": activity,
+        "songId": songId,
         "dateTimeInMis": dateTimeInMis,
       };
   ListeningBehaviourModel.fromJson(Map<String, dynamic> json)
@@ -28,7 +30,8 @@ class ListeningBehaviourModel {
         latitude = json["latitude"],
         longitude = json["longitude"],
         genres = json["genres"],
-        dateTimeInMis = json["dateTImeInMs"];
+        dateTimeInMis = json["dateTImeInMs"],
+        songId = json["songId"];
 
   ListeningBehaviourModel copyWith({
     List<String>? artists,
@@ -37,6 +40,7 @@ class ListeningBehaviourModel {
     double? longitude,
     String? activity,
     int? dateTimeInMis,
+    String? songId,
   }) {
     return ListeningBehaviourModel(
         artists ?? this.artists,
@@ -44,6 +48,7 @@ class ListeningBehaviourModel {
         latitude ?? this.latitude,
         longitude ?? this.longitude,
         activity ?? this.activity,
-        dateTimeInMis ?? this.dateTimeInMis);
+        dateTimeInMis ?? this.dateTimeInMis,
+        songId ?? this.songId);
   }
 }

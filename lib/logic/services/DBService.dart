@@ -9,15 +9,6 @@ class IsarDBService extends DBServiceA {
   late final Isar _isar;
   final GetIt _getIt = GetIt.I;
 
-  IsarDBService() {
-    Isar? isarInstance = Isar.getInstance();
-    if (isarInstance != null) {
-      _isar = isarInstance;
-    } else {
-      _isar = Isar.openSync([ListeningBehaviourModelSchema],
-          inspector: kDebugMode, directory: _getIt<PathServiceA>().appDocPath);
-    }
-  }
   @override
   delete(ListeningBehaviourModel model) {
     _isar.writeTxn(() => _isar.listeningBehaviourModels.delete(model.id));
@@ -25,8 +16,14 @@ class IsarDBService extends DBServiceA {
 
   ///Not needed in this implementation
   @override
-  Future<void> init() {
-    throw UnimplementedError();
+  Future<void> init() async {
+    Isar? isarInstance = Isar.getInstance();
+    if (isarInstance != null) {
+      _isar = isarInstance;
+    } else {
+      _isar = await Isar.open([ListeningBehaviourModelSchema],
+          inspector: kDebugMode, directory: _getIt<PathServiceA>().appDocPath);
+    }
   }
 
   ///Puts  a [ListeningBehaviourModel] in the db

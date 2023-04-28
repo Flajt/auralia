@@ -82,11 +82,14 @@ class SpotifyService implements MusicServiceA {
               : event.track?.isPodcast ?? false
                   ? false
                   : true,
+          id: event.track?.uri.split(":").last ?? "",
           isPaused: event.isPaused,
-          songName: event.track!.name,
+          songName: event.track?.name ?? "UNKNOWN",
           imageUri: event.track?.imageUri.raw,
-          artists: _convertArtistsToId(
-              [event.track!.artist, ...event.track?.artists ?? []]));
+          artists: _convertArtistsToId([
+            event.track?.artist ?? Artist("", ""),
+            ...event.track?.artists ?? []
+          ]));
     });
   }
 

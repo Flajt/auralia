@@ -30,14 +30,11 @@ class HomePage extends StatelessWidget {
                   const Center(child: Player()),
                   Align(
                       alignment: Alignment.bottomCenter,
-                      child: MultiBlocProvider(
-                        providers: [
-                          BlocProvider(create: (context) => PermissionBloc()),
-                          BlocProvider(
-                              create: (context) => CollectionForegroundBloc())
-                        ],
-                        child: const PersonalizationButton(),
-                      )),
+                      child: MultiBlocProvider(providers: [
+                        BlocProvider(create: (context) => PermissionBloc()),
+                        BlocProvider(
+                            create: (context) => CollectionForegroundBloc())
+                      ], child: const PersonalizationButton())),
                 ]))),
       ),
     );

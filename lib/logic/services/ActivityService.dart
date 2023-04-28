@@ -11,13 +11,12 @@ class ActivityService implements ActivityServiceA {
   /// 3 = STILL,
   /// 4 = WALKING,
   /// 5 = UNKNOWN
-  Future<int> getCurrentActivity() async {
+  Future<String> getCurrentActivity() async {
     try {
       Activity currentActivity =
           await FlutterActivityRecognition.instance.activityStream.first;
-      return currentActivity.type.index;
+      return currentActivity.confidence.name;
     } catch (e) {
-      print(e);
       throw e.toString();
     }
   }
