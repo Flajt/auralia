@@ -31,7 +31,8 @@ samples, guidance on mobile development, and a full API reference.
 - For reasons I was not yet able to indentify I can't use the spotify play method in a background process.
 - This requires the current user to always press the right arrow button, at least they get an album containing variable songs 
 - It seems like multiple calls 
-
+- Predictions might not scale way in the future (the consine similarity)
+- Generall accuray of the model is rather low
 
 
 UML diagram:
