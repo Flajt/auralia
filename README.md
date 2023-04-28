@@ -39,3 +39,16 @@ samples, guidance on mobile development, and a full API reference.
 UML diagram:
 ![diagram](./diagrams/output-4.svg)
 History in `/diagrams`
+
+
+### Folder structure
+- bloc: Business Logic Components, handle interactions between UI and service
+- logic: Contains services and abstractions
+- logic/abstract: Interfaces
+- logic/spotify-web: Wrapper for Spotifyweb sdk
+- logic/util: Utilitiy functions
+- logic/webview: Logic related to signing in with webviews
+- logic/models: data models
+- logic/workerService: background services
+- pages: Contains UI for pages
+- uiblocks: Ui components
