@@ -15,12 +15,19 @@ class Player extends StatelessWidget {
     if (bloc.state is InitalPlayerState) {
       bloc.add(InitPlayer());
     }
-    return SizedBox(
-      width: 400,
-      height: 500,
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const [SongImgeDisplay(), ControllerButtons()]),
+    return BlocBuilder<PlayerBloc, PlayerState>(
+      builder: (context, state) {
+        if (state is PlayerHasError) {
+          print(state.errorMsg);
+        }
+        return SizedBox(
+          width: 400,
+          height: 500,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: const [SongImgeDisplay(), ControllerButtons()]),
+        );
+      },
     );
   }
 }

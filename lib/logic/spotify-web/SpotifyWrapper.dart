@@ -1,3 +1,4 @@
+import 'package:auralia/models/RecommendedTrackModel.dart';
 import 'package:chopper/chopper.dart';
 import 'package:spotify_web_api/generated/SpotifyWeb.swagger.dart';
 import 'package:spotify_web_api/spotify_web_api.dart';
@@ -36,6 +37,53 @@ class SpotifyWrapper {
       return artistGenreMapping;
     } else {
       throw artistReq.error.toString();
+    }
+  }
+
+  Future<String> getUserMarket() async {
+    Response resp = await spotifyWeb.meGet();
+    if (resp.isSuccessful) {
+      return resp.body["country"];
+    } else {
+      throw resp.error.toString();
+    }
+  }
+
+  Future<List<RecommendedTrackModel>> getRecommendation(
+      String seedGenres, String market, String artists) async {
+    try {
+      Response recommendationReq = await spotifyWeb.recommendationsGet(
+          limit: 10,
+          seedGenres: seedGenres,
+          market: market,
+          seedArtists: artists);
+
+      if (recommendationReq.isSuccessful) {
+        List<RecommendedTrackModel> recommendations = [];
+        List<Map<dynamic, dynamic>> tracks =
+            List.from(recommendationReq.body["tracks"]);
+        for (Map<dynamic, dynamic> element in tracks) {
+          if (element != null) {
+            recommendations.add(RecommendedTrackModel.fromJson(
+                element as Map<String, dynamic>));
+          }
+        }
+        List<RecommendedTrackModel> updatedModels = [];
+        for (var model in recommendations) {
+          Map<String, List<String>> artistsGenreMapping =
+              await getGenres(model.artists);
+          List<String> genres =
+              artistsGenreMapping.values.expand((element) => element).toList();
+          updatedModels.add(model.copywith(genres: genres));
+        }
+        return updatedModels;
+      } else {
+        throw recommendationReq.error.toString();
+      }
+    } catch (e, s) {
+      print(s);
+      print(e);
+      rethrow;
     }
   }
 }

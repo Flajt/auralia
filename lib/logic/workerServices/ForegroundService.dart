@@ -10,12 +10,11 @@ import 'package:auralia/logic/abstract/LocationServiceA.dart';
 import 'package:auralia/logic/abstract/OauthKeyServiceA.dart';
 import 'package:auralia/logic/services/ForegroundServices/CollectionForegroundService.dart';
 import 'package:auralia/logic/services/LocationService.dart';
-import 'package:auralia/logic/services/SecureStorageWrapperService.dart';
 import 'package:auralia/logic/util/SpotifyUtil.dart';
 import 'package:auralia/logic/util/InternetUtil.dart';
 import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/util/registerServices.dart';
-import 'package:auralia/logic/workerServices/collectionService.dart';
+import 'package:auralia/logic/workerServices/updateOauthAccessToken.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
 import 'package:auralia/models/regular/LocationModel.dart';
 import 'package:flutter_activity_recognition/flutter_activity_recognition.dart';
@@ -27,7 +26,6 @@ import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../abstract/AuthServiceA.dart';
-import '../services/DBService.dart';
 
 @pragma('vm:entry-point')
 void entryPoint() {
@@ -44,14 +42,12 @@ class CollectionHandler extends TaskHandler {
   String _latestActivity = ActivityType.UNKNOWN.name;
   late final LocationServiceA _locationService;
   String _latestSong = "";
-  final DBServiceA _dbService = IsarDBService();
   final Queue<DateTime> timerQueue = Queue();
   ListeningBehaviourModel? lastSong;
   final Stream<int> _timerStream =
       Stream.periodic(const Duration(minutes: 50), (eventCount) => eventCount);
-  final SecureStorageWrapperService secureStorageWrapperService =
-      SecureStorageWrapperService();
   StreamSubscription? _timerSub;
+  late final DBServiceA _dbService;
   CollectionHandler() {
     _activityService = FlutterActivityRecognition.instance;
     _locationService = LocationService();
@@ -60,6 +56,7 @@ class CollectionHandler extends TaskHandler {
   Future<void> initServices() async {
     await initSentry();
     await registerServices();
+    _dbService = _getIt<DBServiceA>();
     _accessToken = (await _getIt<OauthKeyServiceA>().accessToken)!;
     await SpotifySdk.connectToSpotifyRemote(
         clientId: "8faad74f47d8448d863224389ba98e8f",
@@ -131,7 +128,8 @@ class CollectionHandler extends TaskHandler {
               lastSong = behaviourModel.first.copyWith(
                   latitude: locationModel.latitude,
                   longitude: locationModel.longitude,
-                  activity: _latestActivity);
+                  activity: _latestActivity,
+                  songId: event.track!.uri.split(":").last);
             }
           }
         } catch (e, stack) {

@@ -17,7 +17,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.3.10+14
+version: 3.3.9+13
+
 
 environment:
   sdk: '>=2.18.5 <3.0.0'
@@ -30,14 +31,11 @@ dependencies:
   supabase_flutter: ^1.4.0
   url_launcher: ^6.1.9
   line_icons: ^2.0.1
-  flutter_svg: ^1.1.6
+  flutter_svg: ^2.0.5
   workmanager: ^0.5.1
   logger: ^1.1.0
   chopper: ^6.1.0
-  flutter_activity_recognition:
-    git: 
-      url: https://github.com/Flajt/flutter_activity_recognition2
-      ref: upgrade-play-service-location
+  flutter_activity_recognition: ^2.0.0
   permission_handler: ^10.2.0
   flutter_isolate: ^2.0.4
   isar: ^3.0.5
@@ -50,7 +48,7 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   shared_preferences: ^2.0.18
   elegant_notification: ^1.6.4
-  sentry_flutter: ^6.22.0
+  sentry_flutter: ^7.4.2
   internet_connection_checker: ^1.0.0+1
   flutter_inappwebview: ^5.7.2+3
   data_table_2: ^2.4.1
@@ -59,8 +57,11 @@ dependencies:
   get_it: ^7.2.0
   equatable: ^2.0.5
   bloc_concurrency: ^0.2.1
- 
-
+  path_provider: ^2.0.14
+  ml_dataframe: ^1.6.0
+  ml_preprocessing: ^7.0.2
+  ml_linalg: ^13.11.30
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -75,7 +76,7 @@ dev_dependencies:
   json_serializable: ^6.6.1
   json_annotation: ^4.8.0
   isar_generator: ^3.0.5
-  flutter_launcher_icons: ^0.12.0
+  flutter_launcher_icons: ^0.13.1
 
 
 flutter_icons:

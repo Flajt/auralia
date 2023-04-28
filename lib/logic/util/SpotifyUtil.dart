@@ -50,7 +50,8 @@ class SpotifyUtil {
           isSdkTrack
               ? toUtcTime(DateTime.now()).millisecondsSinceEpoch
               : toUtcTime(DateTime.parse(userTrack["played_at"] as String))
-                  .millisecondsSinceEpoch));
+                  .millisecondsSinceEpoch,
+          ""));
     }
     return models;
   }

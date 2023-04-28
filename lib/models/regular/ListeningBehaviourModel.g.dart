@@ -7,7 +7,7 @@ part of 'ListeningBehaviourModel.dart';
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
 extension GetListeningBehaviourModelCollection on Isar {
   IsarCollection<ListeningBehaviourModel> get listeningBehaviourModels =>
@@ -47,6 +47,11 @@ const ListeningBehaviourModelSchema = CollectionSchema(
       id: 5,
       name: r'longitude',
       type: IsarType.double,
+    ),
+    r'songId': PropertySchema(
+      id: 6,
+      name: r'songId',
+      type: IsarType.string,
     )
   },
   estimateSize: _listeningBehaviourModelEstimateSize,
@@ -60,7 +65,7 @@ const ListeningBehaviourModelSchema = CollectionSchema(
   getId: _listeningBehaviourModelGetId,
   getLinks: _listeningBehaviourModelGetLinks,
   attach: _listeningBehaviourModelAttach,
-  version: '3.0.5',
+  version: '3.1.0+1',
 );
 
 int _listeningBehaviourModelEstimateSize(
@@ -84,6 +89,7 @@ int _listeningBehaviourModelEstimateSize(
       bytesCount += value.length * 3;
     }
   }
+  bytesCount += 3 + object.songId.length * 3;
   return bytesCount;
 }
 
@@ -99,6 +105,7 @@ void _listeningBehaviourModelSerialize(
   writer.writeStringList(offsets[3], object.genres);
   writer.writeDouble(offsets[4], object.latitude);
   writer.writeDouble(offsets[5], object.longitude);
+  writer.writeString(offsets[6], object.songId);
 }
 
 ListeningBehaviourModel _listeningBehaviourModelDeserialize(
@@ -114,6 +121,7 @@ ListeningBehaviourModel _listeningBehaviourModelDeserialize(
     reader.readDouble(offsets[5]),
     reader.readString(offsets[0]),
     reader.readLong(offsets[2]),
+    reader.readString(offsets[6]),
   );
   object.id = id;
   return object;
@@ -138,6 +146,8 @@ P _listeningBehaviourModelDeserializeProp<P>(
       return (reader.readDouble(offset)) as P;
     case 5:
       return (reader.readDouble(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1075,6 +1085,144 @@ extension ListeningBehaviourModelQueryFilter on QueryBuilder<
       ));
     });
   }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+      QAfterFilterCondition> songIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'songId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+      QAfterFilterCondition> songIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'songId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+      QAfterFilterCondition> songIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'songId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+      QAfterFilterCondition> songIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'songId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+      QAfterFilterCondition> songIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'songId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+      QAfterFilterCondition> songIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'songId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+          QAfterFilterCondition>
+      songIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'songId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+          QAfterFilterCondition>
+      songIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'songId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+      QAfterFilterCondition> songIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'songId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel,
+      QAfterFilterCondition> songIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'songId',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension ListeningBehaviourModelQueryObject on QueryBuilder<
@@ -1138,6 +1286,20 @@ extension ListeningBehaviourModelQuerySortBy
       sortByLongitudeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'longitude', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel, QAfterSortBy>
+      sortBySongId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel, QAfterSortBy>
+      sortBySongIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songId', Sort.desc);
     });
   }
 }
@@ -1213,6 +1375,20 @@ extension ListeningBehaviourModelQuerySortThenBy on QueryBuilder<
       return query.addSortBy(r'longitude', Sort.desc);
     });
   }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel, QAfterSortBy>
+      thenBySongId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel, QAfterSortBy>
+      thenBySongIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'songId', Sort.desc);
+    });
+  }
 }
 
 extension ListeningBehaviourModelQueryWhereDistinct on QueryBuilder<
@@ -1256,6 +1432,13 @@ extension ListeningBehaviourModelQueryWhereDistinct on QueryBuilder<
       distinctByLongitude() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'longitude');
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, ListeningBehaviourModel, QDistinct>
+      distinctBySongId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'songId', caseSensitive: caseSensitive);
     });
   }
 }
@@ -1307,6 +1490,13 @@ extension ListeningBehaviourModelQueryProperty on QueryBuilder<
       longitudeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'longitude');
+    });
+  }
+
+  QueryBuilder<ListeningBehaviourModel, String, QQueryOperations>
+      songIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'songId');
     });
   }
 }
