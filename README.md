@@ -33,6 +33,7 @@ samples, guidance on mobile development, and a full API reference.
 - It seems like multiple calls 
 - Predictions might not scale way in the future (the consine similarity)
 - Generall accuray of the model is rather low
+- The way of getting spotify tokens is still not great (especially refreshing them)
 
 
 UML diagram:
