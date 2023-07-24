@@ -118,7 +118,7 @@ samples, guidance on mobile development, and a full API reference.
 ![PredictorComponentDiagram](./diagrams/PredictorComponentDiagram.drawio.png)
 
 ### UML Diagrams
-History in `/diagrams`
+[History](./diagrams/) in `/diagrams`
 Latest version in easy to read files.
 
 It might be better to download them and view them speratly, as one needs to zoom in a bit due to the size.
