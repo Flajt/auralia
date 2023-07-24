@@ -46,6 +46,7 @@ Contains parts of:
 - fly.io: Backend hosting
 - sentry.io: Error Logging
 - supabase: Auth service
+- swagger_dart_code_generator: To generate spotify_web_api code for spotify_web_api package
 
 ## Images
 
