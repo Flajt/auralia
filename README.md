@@ -6,14 +6,17 @@ For this a ML Model needs to be developed which can handle the predictions and t
 
 ## Images
 
-![Home](./diagrams/home.jpeg)
+
+<img src="./diagrams/home.jpeg" height="350px">
+<br>
 Home Page with Play, Pause and Skip (+ predict on skip right)
 
-![Settings](./diagrams/settings.jpeg)
-
+<img src="./diagrams/settings.jpeg" height="350px">
+<br>
 Settings Page (everything works except account deletion)
 
-![History](./diagrams/history.jpeg)
+<img src="./diagrams/history.jpeg" width="350px">
+<br>
 User listening history, shows genres, location and similar
 
 
