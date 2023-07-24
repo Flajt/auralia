@@ -35,9 +35,21 @@ samples, guidance on mobile development, and a full API reference.
 - Generall accuray of the model is rather low
 - The way of getting spotify tokens is still not great (especially refreshing them)
 
+### Diagrams:
+![SystemContextDiagram](./diagrams/SystemContext.drawio.png)
 
+![ContainerDiagram](./diagrams/ContainerDiagram.drawio.png)
+
+![ComponentDiagram](./diagrams/AppComponentDiagram.drawio.png)
+**App Component Diagram**
+
+![ApiServiceComponentDiagram](./diagrams/ApiServiceComponentDiagram.drawio.png)
+
+![PredictorComponentDiagram](./diagrams/PredictorComponentDiagram.drawio.png)
 UML diagram:
 ![diagram](./diagrams/output-4.svg)
+Easier to read version: [/diagrams/output-4.pdf](./diagrams/output-4.pdf)
+
 History in `/diagrams`
 
 
