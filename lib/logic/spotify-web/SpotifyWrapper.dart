@@ -1,6 +1,6 @@
 import 'package:auralia/models/RecommendedTrackModel.dart';
 import 'package:chopper/chopper.dart';
-import 'package:spotify_web_api/generated/SpotifyWeb.swagger.dart';
+import 'package:spotify_web_api/generated/spotify_web.swagger.dart';
 import 'package:spotify_web_api/spotify_web_api.dart';
 
 class SpotifyWrapper {
