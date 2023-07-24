@@ -71,11 +71,17 @@ samples, guidance on mobile development, and a full API reference.
 ![ApiServiceComponentDiagram](./diagrams/ApiServiceComponentDiagram.drawio.png)
 
 ![PredictorComponentDiagram](./diagrams/PredictorComponentDiagram.drawio.png)
-UML diagram:
-![diagram](./diagrams/output-4.svg)
-Easier to read version: [/diagrams/output-4.pdf](./diagrams/output-4.pdf)
 
+### UML Diagrams
 History in `/diagrams`
+Latest version in easy to read files.
+
+It might be better to download them and view them speratly, as one needs to zoom in a bit due to the size.
+**Note:** If Linux default file viewer is used it will only display empty boxes, so if it's viewed on linux open it in a browser.
+ 
+- [First SVG File](./diagrams/output-4-1.svg)
+- [Second SVG File](./diagrams/output-4-2.svg)
+- [Third SVG File](./diagrams/output-4-3.svg)
 
 
 ### Folder structure
