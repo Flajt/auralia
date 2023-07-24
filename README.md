@@ -4,6 +4,33 @@ The goal of the project is to recommend users music based on their location, cur
 
 For this a ML Model needs to be developed which can handle the predictions and the users music data needs to be send to the server.
 
+## System quality attributes
+
+- simplicity
+- modularity
+- usability
+
+## Design Patterns
+
+### Creational
+
+- Singleton
+
+### Structural
+- Facade
+- Composite (Flutter Widget Tree)
+
+### Behaviorial
+
+- Observer (Bloc)
+- State (Bloc and Flutter)
+- (Chain of Responsibility (backend express middlewre))
+
+## Design Principles
+- Encapsulation
+- Coding against intefaces
+- Parts of SOLID, namly SOID (Single Responsibility, Open Close,Interface Segregation ,Dependenciy Inversion)
+
 ## Images
 
 
