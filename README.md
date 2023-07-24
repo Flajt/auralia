@@ -47,6 +47,7 @@ Contains parts of:
 - sentry.io: Error Logging
 - supabase: Auth service
 - swagger_dart_code_generator: To generate spotify_web_api code for spotify_web_api package
+- jupyter notebook: For the ML model selection and training part
 
 ## Images
 
