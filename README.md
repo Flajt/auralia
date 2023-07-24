@@ -44,6 +44,7 @@ Contains parts of:
 - Isardb: Database used
 - docker: Backend building
 - fly.io: Backend hosting
+- sentry.io: Error Logging
 
 ## Images
 
