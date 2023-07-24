@@ -4,6 +4,19 @@ The goal of the project is to recommend users music based on their location, cur
 
 For this a ML Model needs to be developed which can handle the predictions and the users music data needs to be send to the server.
 
+## Images
+
+![Home](./diagrams/home.jpeg)
+Home Page with Play, Pause and Skip (+ predict on skip right)
+
+![Settings](./diagrams/settings.jpeg)
+
+Settings Page (everything works except account deletion)
+
+![History](./diagrams/history.jpeg)
+User listening history, shows genres, location and similar
+
+
 ## Getting Started
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
