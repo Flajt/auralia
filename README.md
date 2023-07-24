@@ -31,6 +31,13 @@ For this a ML Model needs to be developed which can handle the predictions and t
 - Coding against intefaces
 - Parts of SOLID, namly SOID (Single Responsibility, Open Close,Interface Segregation ,Dependenciy Inversion)
 
+## Architecture
+Contains parts of:
+- Component based (flutter)
+- Event driven (flutter)
+- "Microservice" (Backend)
+
+
 ## Images
 
 
