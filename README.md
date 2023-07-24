@@ -45,6 +45,7 @@ Contains parts of:
 - docker: Backend building
 - fly.io: Backend hosting
 - sentry.io: Error Logging
+- supabase: Auth service
 
 ## Images
 
