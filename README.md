@@ -37,6 +37,13 @@ Contains parts of:
 - Event driven (flutter)
 - "Microservice" (Backend)
 
+## Tooling
+- Codemagic to create apk and ipa files automatically and submitt them to the appstores
+- dcdg: To create mermaid files for UML
+- mmdc: To generate pdf form mermaid files
+- Isardb: Database used
+- docker: Backend building
+- fly.io: Backend hosting
 
 ## Images
 
