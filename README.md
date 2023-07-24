@@ -1,12 +1,10 @@
 # auralia
 
-A new Flutter project.
+The goal of the project is to recommend users music based on their location, current activity (walking,driving etc.) datetime and previous music choices and the Spotify recommendation Api.
+
+For this a ML Model needs to be developed which can handle the predictions and the users music data needs to be send to the server.
 
 ## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
@@ -26,6 +24,17 @@ samples, guidance on mobile development, and a full API reference.
 - To get an recommendation press the right arrow button
 - You will now get an recommendation selected and played
 
+
+## Features
+
+- Collection of what music the user listens to via Spotify
+- Play, pause and replay the last song
+- Recommend new music on button press
+- View user listening history
+- Authenticate users via Spotify OAuth
+- Upload users music choices on demand or automatically (depending on Android or IOS)
+- Display cover of the currently playing song/soundtrack
+- Enable or disable music collection on button press
 
 ## Issues
 - For reasons I was not yet able to indentify I can't use the spotify play method in a background process.
