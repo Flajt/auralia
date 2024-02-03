@@ -1,0 +1,146 @@
+PODS:
+  - app_links (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - flutter_activity_recognition (0.0.1):
+    - Flutter
+  - flutter_foreground_task (0.0.1):
+    - Flutter
+  - flutter_inappwebview (0.0.1):
+    - Flutter
+    - flutter_inappwebview/Core (= 0.0.1)
+    - OrderedSet (~> 5.0)
+  - flutter_inappwebview/Core (0.0.1):
+    - Flutter
+    - OrderedSet (~> 5.0)
+  - flutter_isolate (0.0.1):
+    - Flutter
+  - flutter_secure_storage (6.0.0):
+    - Flutter
+  - geolocator_apple (1.2.0):
+    - Flutter
+  - isar_flutter_libs (1.0.0):
+    - Flutter
+  - OrderedSet (5.0.0)
+  - package_info_plus (0.4.5):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - permission_handler_apple (9.1.1):
+    - Flutter
+  - Sentry/HybridSDK (8.8.0):
+    - SentryPrivate (= 8.8.0)
+  - sentry_flutter (0.0.1):
+    - Flutter
+    - FlutterMacOS
+    - Sentry/HybridSDK (= 8.8.0)
+  - SentryPrivate (8.8.0)
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - sign_in_with_apple (0.0.1):
+    - Flutter
+  - spotify_sdk (0.0.1):
+    - Flutter
+  - url_launcher_ios (0.0.1):
+    - Flutter
+  - webview_flutter_wkwebview (0.0.1):
+    - Flutter
+  - workmanager (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - app_links (from `.symlinks/plugins/app_links/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_activity_recognition (from `.symlinks/plugins/flutter_activity_recognition/ios`)
+  - flutter_foreground_task (from `.symlinks/plugins/flutter_foreground_task/ios`)
+  - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
+  - flutter_isolate (from `.symlinks/plugins/flutter_isolate/ios`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
+  - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
+  - spotify_sdk (from `.symlinks/plugins/spotify_sdk/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
+  - workmanager (from `.symlinks/plugins/workmanager/ios`)
+
+SPEC REPOS:
+  trunk:
+    - OrderedSet
+    - Sentry
+    - SentryPrivate
+
+EXTERNAL SOURCES:
+  app_links:
+    :path: ".symlinks/plugins/app_links/ios"
+  Flutter:
+    :path: Flutter
+  flutter_activity_recognition:
+    :path: ".symlinks/plugins/flutter_activity_recognition/ios"
+  flutter_foreground_task:
+    :path: ".symlinks/plugins/flutter_foreground_task/ios"
+  flutter_inappwebview:
+    :path: ".symlinks/plugins/flutter_inappwebview/ios"
+  flutter_isolate:
+    :path: ".symlinks/plugins/flutter_isolate/ios"
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/ios"
+  isar_flutter_libs:
+    :path: ".symlinks/plugins/isar_flutter_libs/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  sentry_flutter:
+    :path: ".symlinks/plugins/sentry_flutter/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  sign_in_with_apple:
+    :path: ".symlinks/plugins/sign_in_with_apple/ios"
+  spotify_sdk:
+    :path: ".symlinks/plugins/spotify_sdk/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
+  webview_flutter_wkwebview:
+    :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
+  workmanager:
+    :path: ".symlinks/plugins/workmanager/ios"
+
+SPEC CHECKSUMS:
+  app_links: 5ef33d0d295a89d9d16bb81b0e3b0d5f70d6c875
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_activity_recognition: 5c3b026997742b01e82424ef257db9640822ad77
+  flutter_foreground_task: 21ef182ab0a29a3005cc72cd70e5f45cb7f7f817
+  flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
+  flutter_isolate: 0edf5081826d071adf21759d1eb10ff5c24503b5
+  flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
+  geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
+  isar_flutter_libs: b69f437aeab9c521821c3f376198c4371fa21073
+  OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
+  package_info_plus: fd030dabf36271f146f1f3beacd48f564b0f17f7
+  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  Sentry: 927dfb29d18a14d924229a59cc2ad149f43349f2
+  sentry_flutter: cf7da03b65520b631330ecb498deb592aa7640be
+  SentryPrivate: 4350d865f898224ab9fa02b37d6ee7fbb623f47e
+  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
+  sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
+  spotify_sdk: 63cc13896c9ff93c4d023e03bb4b9b516602f355
+  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
+  webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
+  workmanager: 0afdcf5628bbde6924c21af7836fed07b42e30e6
+
+PODFILE CHECKSUM: 5459711013c3d43da688a09d6fce56659ca2c8ee
+
+COCOAPODS: 1.12.1

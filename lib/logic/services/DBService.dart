@@ -1,14 +1,14 @@
 import 'package:auralia/logic/abstract/DBServiceA.dart';
+import 'package:auralia/logic/abstract/PathSeriveA.dart';
 import 'package:auralia/models/regular/ListeningBehaviourModel.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
 class IsarDBService extends DBServiceA {
   late final Isar _isar;
-  IsarDBService() {
-    _isar =
-        Isar.openSync([ListeningBehaviourModelSchema], inspector: kDebugMode);
-  }
+  final GetIt _getIt = GetIt.I;
+
   @override
   delete(ListeningBehaviourModel model) {
     _isar.writeTxn(() => _isar.listeningBehaviourModels.delete(model.id));
@@ -16,8 +16,14 @@ class IsarDBService extends DBServiceA {
 
   ///Not needed in this implementation
   @override
-  Future<void> init() {
-    throw UnimplementedError();
+  Future<void> init() async {
+    Isar? isarInstance = Isar.getInstance();
+    if (isarInstance != null) {
+      _isar = isarInstance;
+    } else {
+      _isar = await Isar.open([ListeningBehaviourModelSchema],
+          inspector: kDebugMode, directory: _getIt<PathServiceA>().appDocPath);
+    }
   }
 
   ///Puts  a [ListeningBehaviourModel] in the db
@@ -36,7 +42,18 @@ class IsarDBService extends DBServiceA {
   ///Get's the recent [ListeningBehaviourModel]s from the DB
   ///Uses [latestDTInMs] to get everything aferwards
   @override
-  Future<List<ListeningBehaviourModel>> getRecent(int latestDTInMs) async {
+  Future<List<ListeningBehaviourModel>> getRecent(int? latestDTInMs) async {
+    if (latestDTInMs == null) {
+      ListeningBehaviourModel? model = await _isar.listeningBehaviourModels
+          .filter()
+          .idGreaterThan(0, include: true)
+          .findFirst();
+      if (model == null) {
+        return [];
+      } else {
+        latestDTInMs = model.dateTimeInMis;
+      }
+    }
     List<ListeningBehaviourModel> data = await _isar.listeningBehaviourModels
         .filter()
         .dateTimeInMisGreaterThan(latestDTInMs)
@@ -47,5 +64,16 @@ class IsarDBService extends DBServiceA {
   @override
   Future<void> close() async {
     await _isar.close();
+  }
+
+  @override
+  Future<List<ListeningBehaviourModel>> getAll({bool sortAsc = false}) async {
+    final query =
+        _isar.listeningBehaviourModels.filter().idGreaterThan(0, include: true);
+    if (sortAsc) {
+      return await query.sortByDateTimeInMis().findAll();
+    } else {
+      return await query.sortByDateTimeInMisDesc().findAll();
+    }
   }
 }

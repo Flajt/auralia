@@ -1,31 +1,36 @@
+import 'dart:io';
+import 'package:auralia/logic/abstract/OauthKeyServiceA.dart';
 import 'package:auralia/logic/util/initSentry.dart';
 import 'package:auralia/logic/workerServices/behaviourBackgroundService.dart';
-import 'package:auralia/logic/workerServices/collectionService.dart';
 import 'package:auralia/pages/HomePage.dart';
 import 'package:auralia/pages/LoginPage.dart';
+import 'package:auralia/pages/UserBehaviourPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:workmanager/workmanager.dart';
+import 'bloc/PlayerBloc/PlayerBloc.dart';
+import 'bloc/UserBehaviourBloc/UserBehaviourBloc.dart';
 import 'logic/util/SaveOauthTokens.dart';
-import 'logic/util/initSuperbase.dart';
+import 'logic/util/registerServices.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Workmanager().initialize(updateOauthAccessToken, isInDebugMode: false);
-  Workmanager().registerPeriodicTask(
-      "auralia_oauth_update_service", "Updates Spotify Access Token",
-      constraints: Constraints(networkType: NetworkType.connected),
-      initialDelay: const Duration(minutes: 5),
-      frequency: const Duration(minutes: 50));
-  Workmanager().initialize(behaviourBackgroundService, isInDebugMode: true);
-  Workmanager().registerPeriodicTask(
-      "auralia_upload_service", "Uploads data to backend",
-      constraints: Constraints(networkType: NetworkType.connected),
-      frequency: const Duration(hours: 24),
-      initialDelay: const Duration(minutes: 5),
-      backoffPolicy: BackoffPolicy.exponential);
 
-  await initSupabase();
+  ///TODO: Refactor into setup function
+  await registerServices();
+  if (Platform.isAndroid) {
+    await Workmanager()
+        .initialize(behaviourBackgroundService, isInDebugMode: true);
+    await Workmanager().registerPeriodicTask(
+        "auralia_upload_service", "Uploads data to backend",
+        constraints: Constraints(networkType: NetworkType.connected),
+        frequency: const Duration(hours: 24),
+        initialDelay: const Duration(minutes: 5),
+        backoffPolicy: BackoffPolicy.exponential);
+  }
   await initSentry(() => runApp(const MyApp()));
 }
 
@@ -35,7 +40,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [SentryNavigatorObserver()],
       title: 'Auralia',
+      routes: {
+        "/listeningBehaviour": (context) => BlocProvider(
+              create: (context) => UserBehaviourBloc(),
+              child: const UserBehaviourPage(),
+            )
+      },
       theme: ThemeData(
           colorSchemeSeed: const Color(0xff11FfEE), useMaterial3: true),
       home: StreamBuilder(
@@ -47,7 +59,10 @@ class MyApp extends StatelessWidget {
             if (snapshot.data?.event == AuthChangeEvent.signedIn) {
               saveOauthTokens(snapshot);
             }
-            return const HomePage();
+            return BlocProvider(
+              create: (context) => PlayerBloc(),
+              child: const HomePage(),
+            );
           } else {
             return const LoginPage();
           }
