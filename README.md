@@ -4,6 +4,12 @@ The goal of the project is to recommend users music based on their location, cur
 
 For this a ML Model needs to be developed which can handle the predictions and the users music data needs to be send to the server.
 
+## State of project:
+**ON HOLD** <br>
+The project is for now on hold, and may be revisited by the creator in the future.<br>
+If you are interested in adding stuff feel free to reach out, I will monitor this repo periodicaly.<br>
+In case of traction I will add a LICENSE, probably something like GNU GPL or something similar.
+
 ## System quality attributes
 
 - simplicity
@@ -102,8 +108,9 @@ samples, guidance on mobile development, and a full API reference.
 - This requires the current user to always press the right arrow button, at least they get an album containing variable songs 
 - It seems like multiple calls 
 - Predictions might not scale way in the future (the consine similarity)
-- Generall accuray of the model is rather low
+- General accuray of the model is rather low (a better model is required)
 - The way of getting spotify tokens is still not great (especially refreshing them)
+- If this stays open source choose a good LICENSE
 
 ### Diagrams:
 ![SystemContextDiagram](./diagrams/SystemContext.drawio.png)
